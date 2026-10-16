@@ -284,9 +284,11 @@ class ToolAIRequest(BaseModel):
     tool_type: str
     payload: dict
 
-# --- API Endpoints ---
+@app.api_route("/health", methods=["GET", "HEAD"])
+async def health_check():
+    return {"status": "ok", "app": "SehaatSaathi"}
 
-@app.get("/api/config")
+@app.api_route("/api/config", methods=["GET", "HEAD"])
 async def get_config():
     return {
         "status": "online",
@@ -615,7 +617,7 @@ async def pwa_manifest():
     return JSONResponse(content=manifest)
 
 # Root page
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def serve_home():
     template_path = Path(__file__).parent / "templates" / "index.html"
     if template_path.exists():
