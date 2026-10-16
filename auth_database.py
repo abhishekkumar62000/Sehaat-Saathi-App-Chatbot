@@ -3,6 +3,14 @@
 Realistic phone-based login with persistent patient data storage
 """
 
+import sys
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 import sqlite3
 import hashlib
 import random
@@ -174,9 +182,9 @@ class PatientDatabase:
                 pass
             
             self.conn.commit()
-            print("✅ Database initialized successfully!")
+            print("[INFO] Database initialized successfully!")
         except Exception as e:
-            print(f"❌ Database initialization error: {e}")
+            print(f"[ERROR] Database initialization error: {e}")
     
     def generate_otp(self):
         """Generate a 6-digit OTP (Hardcoded for Demo)"""

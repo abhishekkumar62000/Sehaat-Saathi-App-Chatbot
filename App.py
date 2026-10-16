@@ -1,4 +1,14 @@
 import os
+import sys
+
+# Ensure UTF-8 output encoding on Windows console to prevent UnicodeEncodeError
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 import streamlit as st
 try:
     import speech_recognition as sr # type: ignore
@@ -961,7 +971,7 @@ except FileNotFoundError:
 # --- MAIN NAVIGATION MODE ---
 app_mode = st.sidebar.radio(
     "Choose Service Mode 🏥",
-    ["🤖 AI Doctor Consultation", "🚑 Real-Time Emergency Dashboard (LIVE)", "🧘 Smart Wellness & Tools (NEW)"]
+    ["🤖 AI Doctor Consultation", "🧘 Smart Wellness & Tools (NEW)"]
 )
 
 # --- 🗺️ ADVANCED LOCATION SELECTOR (State -> District) ---
@@ -1042,21 +1052,6 @@ with st.sidebar:
         else:
              st.session_state.auto_speak_enabled = False
              
-    # Generic Sidebar Items for both modes
-    if app_mode == "🚑 Real-Time Emergency Dashboard (LIVE)":
-        st.info(f"Showing live data for: **{user_city} ({selected_state})**")
-        selected_city = user_city # Backend compatibility
-
-    st.markdown("## <span style='color: #FF9933;'>Sehaat</span><span style='color: #138808;'>Saathi</span> Capabilities🤷‍♂️", unsafe_allow_html=True)
-
-    st.markdown("""
-    - 🤖 AI Doctor
-    - 🥗 Personalized Diet Plans
-    - 💪 Workout Routines
-    - 🧠 Mental Health Support
-    - ⚠️ Medicine Interaction Checker
-    - 🔬 Lab Report Analysis
-    """)
     st.markdown("---")
     st.markdown("<h3 style='text-align: center; color: #00d2ff; margin-bottom: 20px;'>👨‍💻 Developer</h3>", unsafe_allow_html=True)
     

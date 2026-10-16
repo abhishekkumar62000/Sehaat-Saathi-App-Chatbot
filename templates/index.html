@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SehaatSaathi - Your AI Doctor & Smart Health Assistant</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#FF9933',
+                            green: '#138808',
+                            cyan: '#00d2ff',
+                            pink: '#ec4899',
+                            darkpink: '#be185d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <!-- Marked.js for markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 🇮🇳 Spinning Ashoka Chakra Watermark */
+        @keyframes spinSVG {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulseChakra {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.04; }
+            100% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.08; } 
+        }
+        .ashoka-chakra-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 70vh;
+            height: 70vh;
+            z-index: 1; 
+            pointer-events: none;
+            animation: pulseChakra 4s ease-in-out infinite alternate;
+            transform-origin: center;
+            transform: translate(-50%, -50%);
+        }
+        .ashoka-chakra-bg svg {
+            animation: spinSVG 60s linear infinite;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 🫧 Floating Medical Particles */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            bottom: -50px;
+            font-size: 30px;
+            color: rgba(255, 255, 255, 0.4);
+            animation: floatUp 16s linear infinite;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.6);
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* 💓 The Vital Life Line Animation (ECG) */
+        .ecg-container {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            overflow: hidden;
+            opacity: 0.25;
+            pointer-events: none;
+            margin-bottom: -15px;
+        }
+        .ecg-path {
+            fill: none;
+            stroke: #00d2ff;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawECG 4s linear infinite, glowECG 3s ease-in-out infinite alternate;
+        }
+        @keyframes drawECG {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes glowECG {
+            0% { filter: drop-shadow(0 0 3px rgba(0, 210, 255, 0.3)); stroke: #00d2ff; }
+            100% { filter: drop-shadow(0 0 10px rgba(57, 255, 20, 0.6)); stroke: #39ff14; }
+        }
+
+        /* Card styles matching original Streamlit */
+        .st-card-dark {
+            background: rgba(10, 18, 38, 0.7);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+        }
+        .st-card-glow {
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid #00d2ff;
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+        }
+        .st-input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .st-input:focus {
+            border-color: #00d2ff;
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+        }
+        .btn-pink-gradient {
+            background: linear-gradient(90deg, #ec4899, #d946ef);
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.35);
+        }
+        .btn-pink-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.55);
+        }
+        .pill-suggestion {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 9999px;
+            padding: 8px 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
+            white-space: nowrap;
+        }
+        .pill-suggestion:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.5);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 210, 255, 0.3);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen text-slate-100 selection:bg-brand-cyan selection:text-black overflow-x-hidden"
+      x-data="sehaatOriginalApp()" x-init="initApp()">
+
+    <!-- 🇮🇳 Faint Spinning Ashoka Chakra in Center -->
+    <div class="ashoka-chakra-bg">
+        <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="120" cy="120" r="110" fill="none" stroke="#00d2ff" stroke-width="8" stroke-opacity="0.5"/>
+            <circle cx="120" cy="120" r="20" fill="#00d2ff" fill-opacity="0.3"/>
+            <g stroke="#00d2ff" stroke-width="3" stroke-opacity="0.4">
+                <template x-for="i in 24" :key="i">
+                    <line x1="120" y1="120" x2="120" y2="10" :transform="`rotate(${i * 15} 120 120)`"/>
+                </template>
+            </g>
+        </svg>
+    </div>
+
+    <!-- 🫧 Floating Medical Particles -->
+    <div class="floating-particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;">✚</div>
+        <div class="particle" style="left: 25%; animation-delay: 3s;">❤️</div>
+        <div class="particle" style="left: 40%; animation-delay: 6s;">💊</div>
+        <div class="particle" style="left: 60%; animation-delay: 2s;">🧬</div>
+        <div class="particle" style="left: 75%; animation-delay: 5s;">🩺</div>
+        <div class="particle" style="left: 90%; animation-delay: 1s;">✚</div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- SCREEN 1: PATIENT REGISTRATION FORM (MATCHING IMAGE 1 EXACTLY)           -->
+    <!-- Shown when profileComplete is FALSE                                       -->
+    <!-- ========================================================================= -->
+    <div x-show="!profileComplete" x-transition.opacity.duration.300ms class="relative z-10 max-w-4xl mx-auto px-4 py-8">
+        
+        <!-- Top App Title (Matches Image 1) -->
+        <div class="text-center space-y-1 mb-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight font-heading">
+                <span class="text-brand-orange">Sehaat</span><span class="text-brand-green">Saathi</span> 🧑‍⚕️
+            </h1>
+            <p class="text-base md:text-lg font-semibold text-slate-100">
+                Your AI Doctor 👨‍⚕️ & Smart Health Assistant 😷
+            </p>
+        </div>
+
+        <!-- Platform Info Box (Matches Image 1) -->
+        <div class="st-card-dark p-5 rounded-2xl text-center space-y-1.5 mb-8 border border-white/10 shadow-xl">
+            <p class="text-xs md:text-sm font-semibold text-slate-200">
+                🚀 <span class="text-brand-orange font-bold">Sehaat</span> <span class="text-brand-green font-bold">Saathi</span> is <span class="text-pink-400 font-bold">India's 1st AI Powered Virtual HealthCare Platform</span>
+            </p>
+            <p class="text-xs text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                Designed to provide users with personalized healthcare advice, symptom checking, emergency treatment suggestions, and doctor consultations.
+            </p>
+        </div>
+
+        <!-- Patient Registration Form Card (Matches Image 1) -->
+        <div class="st-card-glow p-6 md:p-8 rounded-3xl relative overflow-hidden shadow-2xl space-y-6">
+            
+            <!-- ECG Heartline Animation running in header -->
+            <div class="ecg-container">
+                <svg viewBox="0 0 1000 100" preserveAspectRatio="none" class="w-full h-full">
+                    <path class="ecg-path" d="M0 50 L120 50 L140 10 L160 90 L180 50 L340 50 L360 5 L380 95 L400 50 L560 50 L580 20 L600 80 L620 50 L800 50 L820 10 L840 90 L860 50 L1000 50" />
+                </svg>
+            </div>
+
+            <!-- Form Header -->
+            <div class="text-center relative z-10 space-y-1">
+                <h2 class="text-2xl font-bold text-brand-cyan font-heading flex items-center justify-center gap-2">
+                    <span>📋</span>
+                    <span>Patient Registration Form</span>
+                </h2>
+                <p class="text-xs text-slate-300">
+                    Please fill in your details so our AI Specialists can provide personalized care.
+                </p>
+            </div>
+
+            <!-- 2-Column Form Fields (Matches Image 1) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10 text-xs">
+                
+                <!-- Left Column -->
+                <div class="space-y-4">
+                    <!-- Full Name -->
+                    <div>
+                        <label class="block text-slate-300 font-medium mb-1.5">Full Name</label>
+                        <input type="text" x-model="patient.name" placeholder="e.g., Rahul Kumar" class="w-full px-4 py-2.5 st-input text-xs">
+                    </div>
+
+                    <!-- Age Counter -->
+                    <div>
+                        <label class="block text-slate-300 font-medium mb-1.5">Age</label>
+                        <div class="flex items-center">
+                            <button @click="if(patient.age > 1) patient.age--" class="w-10 h-9 bg-white/10 hover:bg-white/20 rounded-l-xl text-lg font-bold flex items-center justify-center transition border border-white/20 border-r-0">−</button>
+                            <input type="number" x-model.number="patient.age" min="1" max="120" class="flex-1 h-9 st-input text-center rounded-none text-xs border-y border-white/20">
+                            <button @click="if(patient.age < 120) patient.age++" class="w-10 h-9 bg-white/10 hover:bg-white/20 rounded-r-xl text-lg font-bold flex items-center justify-center transition border border-white/20 border-l-0">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Gender Dropdown -->
+                    <div>
+                        <label class="block text-slate-300 font-medium mb-1.5">Gender</label>
+                        <select x-model="patient.gender" class="w-full px-4 py-2.5 st-input text-xs bg-[#1a1c38]">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-4">
+                    <!-- Weight Counter -->
+                    <div>
+                        <label class="block text-slate-300 font-medium mb-1.5">Weight (kg) - Helps in Dosage</label>
+                        <div class="flex items-center">
+                            <button @click="if(patient.weight > 5) patient.weight = (parseFloat(patient.weight) - 1).toFixed(2)" class="w-10 h-9 bg-white/10 hover:bg-white/20 rounded-l-xl text-lg font-bold flex items-center justify-center transition border border-white/20 border-r-0">−</button>
+                            <input type="number" step="0.5" x-model="patient.weight" class="flex-1 h-9 st-input text-center rounded-none text-xs border-y border-white/20">
+                            <button @click="patient.weight = (parseFloat(patient.weight) + 1).toFixed(2)" class="w-10 h-9 bg-white/10 hover:bg-white/20 rounded-r-xl text-lg font-bold flex items-center justify-center transition border border-white/20 border-l-0">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Existing Conditions -->
+                    <div>
+                        <label class="block text-slate-300 font-medium mb-1.5">Existing Conditions</label>
+                        <input type="text" x-model="patient.conditions" placeholder="Diabetes, Hypertension, etc." class="w-full px-4 py-2.5 st-input text-xs">
+                    </div>
+
+                    <!-- Known Allergies -->
+                    <div>
+                        <label class="block text-slate-300 font-medium mb-1.5">Known Allergies</label>
+                        <input type="text" x-model="patient.allergies" placeholder="Penicillin, Peanuts, etc." class="w-full px-4 py-2.5 st-input text-xs">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start Consultation Button (Matches Image 1) -->
+            <div class="pt-3 relative z-10">
+                <button @click="submitRegistration()" class="px-6 py-3 btn-pink-gradient text-xs md:text-sm font-bold flex items-center gap-2">
+                    <span>✅</span>
+                    <span>Start Consultation</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- SCREEN 2: MAIN SEHAAT SAATHI APP (MATCHING IMAGE 2 EXACTLY)               -->
+    <!-- Shown when profileComplete is TRUE                                        -->
+    <!-- ========================================================================= -->
+    <div x-show="profileComplete" x-transition.opacity.duration.300ms class="relative z-10 flex min-h-screen">
+        
+        <!-- Mobile Backdrop Overlay -->
+        <div x-show="sidebarOpen"
+             @click="sidebarOpen = false"
+             class="fixed inset-0 bg-black/75 backdrop-blur-sm z-40 lg:hidden"
+             x-transition.opacity></div>
+
+        <!-- ========================================== -->
+        <!-- LEFT SIDEBAR (RESPONSIVE DRAWER & DESKTOP) -->
+        <!-- ========================================== -->
+        <aside :class="{
+                   'translate-x-0': sidebarOpen,
+                   '-translate-x-full': !sidebarOpen,
+                   'lg:w-80 lg:p-4 lg:border-r': sidebarOpen,
+                   'lg:w-0 lg:p-0 lg:border-none lg:overflow-hidden': !sidebarOpen
+               }"
+               class="fixed lg:static top-0 bottom-0 left-0 z-50 w-80 flex-shrink-0 bg-[#0a1128] lg:bg-[#0a1128]/95 border-r border-white/10 p-4 space-y-4 overflow-y-auto max-h-screen scrollbar-thin transition-all duration-300 ease-in-out shadow-2xl lg:shadow-none">
+            
+            <!-- Mobile Close Header -->
+            <div class="flex items-center justify-between pb-2 border-b border-white/10 lg:hidden">
+                <span class="text-xs font-bold text-brand-cyan flex items-center gap-1.5">
+                    <span>👨‍⚕️</span>
+                    <span>Doctor Settings Menu</span>
+                </span>
+                <button @click="sidebarOpen = false" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1">
+                    <span>✕</span>
+                    <span>Close</span>
+                </button>
+            </div>
+
+            <!-- 1. Sehaat Saathi Logo Card (Image 2 Clean Style) -->
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-[#16203a]/60 shadow-lg">
+                <img src="/media/SehaatSaathi.png" alt="Sehaat Saathi Logo" class="w-full h-auto block rounded-2xl">
+            </div>
+
+            <!-- 2. Doctor Photo Card (Image 2 Clean Style) -->
+            <div class="rounded-2xl overflow-hidden border border-white/10 bg-[#16203a]/60 shadow-lg">
+                <img src="/media/Doctor.png" alt="AI Doctor" class="w-full h-auto block rounded-2xl">
+            </div>
+
+            <!-- 3. Configuration Section (Image Ke Niche & Choose Service Mode Ke Upar) -->
+            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-3 text-xs">
+                <label class="block text-xs font-bold text-brand-cyan">⚙ Configuration</label>
+                
+                <!-- Choose Doctor Role Dropdown -->
+                <div>
+                    <label class="block text-[11px] text-slate-300 font-medium mb-1">Choose Doctor Role 👨‍⚕️</label>
+                    <select x-model="selectedDoctorRole" @change="onDoctorRoleChange()" class="w-full px-2.5 py-2 st-input text-xs bg-[#121936]">
+                        <template x-for="doc in doctorList" :key="doc.id">
+                            <option :value="doc.id" x-text="doc.name + ' (' + doc.title + ')'"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <!-- Language Selector -->
+                <div>
+                    <label class="block text-[11px] text-slate-300 font-medium mb-1">Select Response Language</label>
+                    <select x-model="selectedLanguage" class="w-full px-2.5 py-1.5 st-input text-xs bg-[#121936]">
+                        <option>English</option>
+                        <option>Hindi</option>
+                    </select>
+                </div>
+
+                <!-- Patient Profile Expander -->
+                <div class="border border-white/10 rounded-xl overflow-hidden">
+                    <button @click="showPatientExpander = !showPatientExpander" class="w-full px-3 py-2 bg-white/5 flex items-center justify-between text-left text-xs text-slate-300 font-semibold">
+                        <span>👤 Patient Profile (Smart Context)</span>
+                        <span x-text="showPatientExpander ? '▲' : '▼'"></span>
+                    </button>
+                    <div x-show="showPatientExpander" class="p-3 bg-black/30 space-y-1.5 text-[11px] text-slate-300">
+                        <p>Name: <b class="text-brand-cyan" x-text="patient.name"></b></p>
+                        <p>Age: <b class="text-white" x-text="patient.age + ' Yrs'"></b> | Gender: <b class="text-white" x-text="patient.gender"></b></p>
+                        <p>Weight: <b class="text-white" x-text="patient.weight + ' kg'"></b></p>
+                        <p>Conditions: <b class="text-amber-300" x-text="patient.conditions"></b></p>
+                        <p>Allergies: <b class="text-rose-400" x-text="patient.allergies"></b></p>
+                    </div>
+                </div>
+
+                <!-- Auto-Read Audio Toggle -->
+                <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                    <input type="checkbox" x-model="autoSpeakEnabled" class="accent-brand-cyan">
+                    <span>🔊 Auto-Read AI Responses</span>
+                </label>
+            </div>
+
+            <!-- 4. Choose Service Mode Radio Buttons -->
+            <div class="p-3 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                <label class="block text-xs font-bold text-slate-200">Choose Service Mode 🏥</label>
+                <div class="space-y-1.5 text-xs">
+                    <label class="flex items-center gap-2 cursor-pointer p-1.5 rounded-xl hover:bg-white/5 transition" :class="serviceMode === 'consult' ? 'text-brand-cyan font-bold' : 'text-slate-300'">
+                        <input type="radio" value="consult" x-model="serviceMode" class="accent-brand-cyan">
+                        <span>🤖 AI Doctor Consultation</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer p-1.5 rounded-xl hover:bg-white/5 transition" :class="serviceMode === 'wellness' ? 'text-brand-cyan font-bold' : 'text-slate-300'">
+                        <input type="radio" value="wellness" x-model="serviceMode" class="accent-brand-cyan">
+                        <span>🧘 Smart Wellness & Tools (NEW)</span>
+                    </label>
+                </div>
+            </div>
+
+
+            <!-- 8. Developer Card (Image 2) -->
+            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center space-y-2 shadow-lg">
+                <h4 class="text-xs font-bold text-brand-cyan">👨‍💻 Developer</h4>
+                <img src="/media/pic.jpg" alt="Abhishek Yadav" class="w-24 h-24 rounded-2xl border-2 border-brand-cyan object-cover mx-auto shadow-md">
+                <h5 class="text-sm font-bold text-white">Abhishek ❤️ Yadav</h5>
+                <p class="text-[11px] font-semibold text-brand-cyan">Full Stack AI Developer</p>
+                <div class="flex justify-center gap-3 pt-1">
+                    <a href="https://abhi-yadav.vercel.app/" target="_blank" title="Portfolio">
+                        <img src="https://img.icons8.com/color/48/000000/portfolio.png" class="w-6 h-6 hover:scale-110 transition">
+                    </a>
+                    <a href="https://www.linkedin.com/in/abhishek-kumar-807853375/" target="_blank" title="LinkedIn">
+                        <img src="https://img.icons8.com/color/48/000000/linkedin.png" class="w-6 h-6 hover:scale-110 transition">
+                    </a>
+                    <a href="https://github.com/abhishekkumar62000" target="_blank" title="GitHub">
+                        <img src="https://img.icons8.com/fluent/48/000000/github.png" class="w-6 h-6 hover:scale-110 transition">
+                    </a>
+                </div>
+            </div>
+
+            <!-- 9. Health Tip -->
+            <div class="p-2.5 rounded-xl bg-blue-950/60 border border-blue-500/30 text-[11px] text-blue-200">
+                💡 <b>Health Tip:</b> Drink at least 3 liters of water daily for better skin and digestion.
+            </div>
+
+            <!-- 10. Reset Conversation Button -->
+            <button @click="resetConversation()" class="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium text-slate-300 transition flex items-center justify-center gap-2">
+                <span>🗑️</span>
+                <span>Reset Conversation</span>
+            </button>
+        </aside>
+
+        <!-- ========================================== -->
+        <!-- MAIN CONTENT AREA (MATCHING IMAGE 2)       -->
+        <!-- ========================================== -->
+        <main class="flex-1 p-3 sm:p-5 md:p-8 overflow-y-auto max-h-screen space-y-4 md:space-y-6 w-full min-w-0">
+            
+            <!-- Sticky Top Navigation / Toggle Menu Bar -->
+            <div class="flex items-center justify-between gap-2 p-2 sm:p-2.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md sticky top-0 z-30 shadow-lg">
+                <button @click="sidebarOpen = !sidebarOpen"
+                        class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl btn-pink-gradient font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
+                    <span class="text-sm font-black" x-text="sidebarOpen ? '✕' : '☰'"></span>
+                    <span x-text="sidebarOpen ? 'Hide Menu' : 'Doctor Menu 👨‍⚕️'"></span>
+                </button>
+
+                <div class="flex items-center gap-2 text-xs truncate">
+                    <span class="px-2.5 py-1 rounded-full bg-cyan-950/80 border border-brand-cyan/40 text-brand-cyan font-bold truncate flex items-center gap-1 text-[11px] sm:text-xs">
+                        <span>🩺</span>
+                        <span x-text="activeDoctorName"></span>
+                    </span>
+                    <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-semibold text-[11px]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Live
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Top App Header (Image 2) -->
+            <div class="text-center space-y-1">
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight font-heading">
+                    <span class="text-brand-orange">Sehaat</span><span class="text-brand-green">Saathi</span> 🧑‍⚕️
+                </h1>
+                <p class="text-sm md:text-base font-semibold text-slate-100">
+                    Your AI Doctor 👨‍⚕️ & Smart Health Assistant 😷
+                </p>
+            </div>
+
+            <!-- Platform Info Box (Image 2) -->
+            <div class="st-card-dark p-4 rounded-2xl text-center space-y-1 border border-white/10 shadow-lg">
+                <p class="text-xs md:text-sm font-semibold text-slate-200">
+                    🚀 <span class="text-brand-orange font-bold">Sehaat</span> <span class="text-brand-green font-bold">Saathi</span> is <span class="text-pink-400 font-bold">India's 1st AI Powered Virtual HealthCare Platform</span>
+                </p>
+                <p class="text-xs text-slate-400 max-w-2xl mx-auto">
+                    Designed to provide users with personalized healthcare advice, symptom checking, emergency treatment suggestions, and doctor consultations.
+                </p>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- SUB-VIEW 1: AI DOCTOR CONSULTATION (IMAGE 2)                  -->
+            <!-- ============================================================== -->
+            <div x-show="serviceMode === 'consult'" class="space-y-4">
+                
+                <!-- Doctor Status Bar (Image 2) -->
+                <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold">
+                    <span class="text-brand-cyan flex items-center gap-1.5">
+                        <span>🩺</span>
+                        <span x-text="activeDoctorName"></span>
+                    </span>
+                    <span class="text-slate-300 flex items-center gap-2">
+                        <span>📍 <span x-text="selectedDistrict"></span></span>
+                        <span>|</span>
+                        <span class="flex items-center gap-1 text-emerald-400 font-bold">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Live Connected
+                        </span>
+                    </span>
+                </div>
+
+                <!-- Chat History / Messages Display -->
+                <div class="space-y-3">
+                    
+                    <!-- Doctor Greeting Message Card (Image 2) -->
+                    <div class="p-4 rounded-2xl bg-[#1e1338]/80 border-l-4 border-pink-500 border-y border-r border-white/10 shadow-lg space-y-2">
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl p-1 bg-amber-500/20 rounded-xl">🤖</span>
+                            <div class="text-xs leading-relaxed text-slate-200 space-y-1">
+                                <p>
+                                    👋 नमस्ते! मैं <b class="text-brand-orange">Sehaat</b><b class="text-brand-green">Saathi</b> हूँ, आपका व्यक्तिगत AI स्वास्थ्य सलाहकार।
+                                </p>
+                                <p class="text-slate-300">
+                                    मैं <b>Symptom Check 🩺</b>, <b>Diet Plan 🥗</b>, <b>Workout Routine 💪</b> और <b>Medical Reports 📄</b> में मदद कर सकता हूँ!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Chat Messages -->
+                    <template x-for="(msg, index) in messages" :key="index">
+                        <div class="flex gap-3" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
+                            <div class="max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2 shadow-md"
+                                 :class="msg.role === 'user' ? 'bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-br-none border border-teal-400/30' : 'bg-[#151c38]/90 border-l-4 border-brand-cyan border-y border-r border-white/10 text-slate-200 rounded-tl-none'">
+                                <div class="prose prose-invert max-w-none text-xs leading-relaxed" x-html="renderMarkdown(msg.content)"></div>
+                                
+                                <!-- Action Buttons on Doctor Replies -->
+                                <div x-show="msg.role !== 'user'" class="flex items-center justify-between pt-2 border-t border-white/10 text-[11px]">
+                                    <button @click="speakText(msg.content)" class="text-brand-cyan hover:underline flex items-center gap-1 font-semibold">
+                                        <span>🔊</span>
+                                        <span>Read Aloud</span>
+                                    </button>
+                                    <button @click="downloadPrescription(msg.content)" class="px-3 py-1 rounded-lg bg-brand-cyan text-slate-900 font-bold hover:bg-cyan-300 transition flex items-center gap-1">
+                                        <span>📄</span>
+                                        <span>Download Rx (PDF)</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Streaming Text Live Display -->
+                    <div x-show="isStreaming" class="flex justify-start">
+                        <div class="max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed bg-[#151c38]/90 border-l-4 border-brand-cyan border-y border-r border-white/10 text-slate-200 shadow-md">
+                            <div class="prose prose-invert max-w-none text-xs leading-relaxed" x-html="renderMarkdown(currentStreamChunk)"></div>
+                            <span class="inline-block w-2 h-4 bg-brand-cyan animate-pulse"></span>
+                        </div>
+                    </div>
+
+                    <!-- Typing loader -->
+                    <div x-show="isLoading && !isStreaming" class="flex items-center gap-2 text-xs text-brand-cyan italic">
+                        <span class="w-2 h-2 rounded-full bg-brand-cyan animate-bounce"></span>
+                        <span class="w-2 h-2 rounded-full bg-brand-cyan animate-bounce [animation-delay:0.2s]"></span>
+                        <span class="w-2 h-2 rounded-full bg-brand-cyan animate-bounce [animation-delay:0.4s]"></span>
+                        <span x-text="activeDoctorName + ' is analyzing symptoms...'"></span>
+                    </div>
+                </div>
+
+                <!-- 💡 Suggested Questions for Doctor (Image 2) -->
+                <div class="space-y-2 pt-2">
+                    <h3 class="text-xs md:text-sm font-bold text-slate-100 flex items-center gap-1.5">
+                        <span>💡</span>
+                        <span>Suggested Questions for <span class="text-brand-cyan" x-text="activeDoctorName"></span></span>
+                    </h3>
+
+                    <!-- 4 Horizontal Pink Pill Buttons (Image 2) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                        <template x-for="q in currentSuggestedQuestions" :key="q">
+                            <button @click="sendDirectQuestion(q)" class="pill-suggestion text-center truncate" :title="q" x-text="q"></button>
+                        </template>
+                    </div>
+
+                    <!-- Pagination Controls ⬅️ ➡️ (Image 2) -->
+                    <div class="flex items-center justify-between pt-1">
+                        <button @click="prevSuggestionPage()" class="w-8 h-8 rounded-xl bg-pink-600/80 hover:bg-pink-600 text-white font-bold flex items-center justify-center transition">
+                            ⬅️
+                        </button>
+                        <span class="text-[11px] text-slate-400">Page <span x-text="suggestionPage + 1"></span> of <span x-text="totalSuggestionPages"></span></span>
+                        <button @click="nextSuggestionPage()" class="w-8 h-8 rounded-xl bg-pink-600/80 hover:bg-pink-600 text-white font-bold flex items-center justify-center transition">
+                            ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Attached Report Indicator -->
+                <div x-show="attachedReportName" class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-cyan-950/80 border border-brand-cyan text-xs text-brand-cyan">
+                    <span>📎 Report Attached: <b x-text="attachedReportName"></b></span>
+                    <button @click="attachedReportName = ''; attachedReportText = '';" class="text-red-400 hover:text-red-300">✕</button>
+                </div>
+
+                <!-- Bottom Chat Input Area (Image 2) -->
+                <div class="pt-2 border-t border-white/10">
+                    <div class="flex items-center gap-2">
+                        <!-- File Upload -->
+                        <label class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 cursor-pointer transition" title="Attach Medical Report / Image">
+                            📎
+                            <input type="file" @change="uploadReportFile($event)" class="hidden" accept=".pdf,.png,.jpg,.jpeg">
+                        </label>
+
+                        <!-- Speak Mic Button -->
+                        <button @click="toggleMicSpeech()"
+                                :class="isListening ? 'bg-red-600 text-white animate-pulse ring-2 ring-red-400' : 'bg-white/10 hover:bg-white/20 text-slate-300'"
+                                class="p-2.5 rounded-xl transition" title="Voice Dictation">
+                            🎤
+                        </button>
+
+                        <!-- Text Input Box -->
+                        <input type="text"
+                               x-model="userInput"
+                               @keydown.enter="sendTextMessage()"
+                               :placeholder="'Ask your ' + activeDoctorName + ' ...'"
+                               class="flex-1 px-4 py-2.5 st-input text-xs">
+
+                        <!-- Send Button (Circular Arrow Button in Image 2) -->
+                        <button @click="sendTextMessage()"
+                                :disabled="isLoading || (!userInput.trim() && !attachedReportText)"
+                                class="w-10 h-10 rounded-xl bg-white/10 hover:bg-brand-cyan hover:text-black text-white font-bold flex items-center justify-center transition disabled:opacity-40">
+                            ↑
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ============================================================== -->
+            <!-- SUB-VIEW 3: SMART WELLNESS & TOOLS (14 FEATURES)              -->
+            <!-- ============================================================== -->
+            <div x-show="serviceMode === 'wellness'" class="space-y-5">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-brand-cyan font-heading">🧘 Smart Wellness Dashboard</h2>
+                    <span class="text-xs text-slate-400">14 Comprehensive Healthcare Utilities</span>
+                </div>
+
+                <!-- Wellness Tool Tabs Ribbon -->
+                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                    <template x-for="t in wellnessTabList" :key="t.id">
+                        <button @click="currentWellnessTab = t.id"
+                                :class="currentWellnessTab === t.id ? 'bg-brand-cyan text-slate-900 font-bold shadow-md' : 'bg-white/10 text-slate-300 hover:bg-white/20'"
+                                class="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition">
+                            <span x-text="t.emoji"></span>
+                            <span x-text="t.name"></span>
+                        </button>
+                    </template>
+                </div>
+
+                <!-- TAB: BMI -->
+                <div x-show="currentWellnessTab === 'bmi'" class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                    <h3 class="font-bold text-sm text-brand-cyan">Body Mass Index (BMI) Precision Analyzer</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-300 mb-1">Weight: <b class="text-brand-cyan" x-text="patient.weight + ' kg'"></b></label>
+                                <input type="range" min="30" max="150" x-model="patient.weight" class="w-full accent-brand-cyan">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 mb-1">Height: <b class="text-brand-cyan" x-text="bmiHeight + ' cm'"></b></label>
+                                <input type="range" min="100" max="230" x-model="bmiHeight" class="w-full accent-brand-cyan">
+                            </div>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-black/40 text-center space-y-1 border border-white/10">
+                            <span class="text-xs text-slate-400">Calculated BMI</span>
+                            <div class="text-4xl font-extrabold text-brand-cyan font-heading" x-text="calcBmi().val"></div>
+                            <span class="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-emerald-950 text-emerald-400 border border-emerald-500" x-text="calcBmi().status"></span>
+                            <p class="text-xs text-slate-400 pt-2" x-text="calcBmi().tip"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: REMINDERS -->
+                <div x-show="currentWellnessTab === 'reminders'" class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                    <h3 class="font-bold text-sm text-brand-cyan">📅 Create Medicine Calendar Reminder (.ics)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <input type="text" x-model="medReminder.name" placeholder="Medicine Name (e.g. Paracetamol)" class="px-3 py-2 st-input text-xs">
+                        <input type="text" x-model="medReminder.dose" placeholder="Dosage (e.g. 1 Tab after lunch)" class="px-3 py-2 st-input text-xs">
+                        <input type="time" x-model="medReminder.time" class="px-3 py-2 st-input text-xs">
+                    </div>
+                    <button @click="downloadIcsFile()" class="px-5 py-2 btn-pink-gradient text-xs font-bold">Generate & Download .ics</button>
+                </div>
+
+                <!-- TAB: HYDRATION -->
+                <div x-show="currentWellnessTab === 'hydration'" class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                    <h3 class="font-bold text-sm text-brand-cyan">💧 Daily Hydration Water Tracker</h3>
+                    <div class="flex items-center gap-6">
+                        <div class="text-4xl font-bold text-sky-400 font-heading" x-text="waterLiters.toFixed(2) + ' L'"></div>
+                        <div class="flex gap-2">
+                            <button @click="waterLiters += 0.25" class="px-3 py-2 rounded-xl bg-sky-950 border border-sky-400 text-sky-300 text-xs font-bold">🥤 +250ml</button>
+                            <button @click="waterLiters += 0.50" class="px-3 py-2 rounded-xl bg-sky-950 border border-sky-400 text-sky-300 text-xs font-bold">🍶 +500ml</button>
+                            <button @click="waterLiters = 0" class="px-3 py-2 rounded-xl bg-white/10 text-slate-300 text-xs">🔄 Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: DIET PLANNER -->
+                <div x-show="currentWellnessTab === 'diet'" class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                    <h3 class="font-bold text-sm text-brand-cyan">🥗 AI Personalized Meal & Diet Plan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <select x-model="dietPlanGoal" class="px-3 py-2 st-input text-xs bg-[#121936]">
+                            <option>Weight Loss</option>
+                            <option>Muscle Gain</option>
+                            <option>Diabetes Control</option>
+                            <option>Heart Health</option>
+                        </select>
+                        <select x-model="dietPlanType" class="px-3 py-2 st-input text-xs bg-[#121936]">
+                            <option>Vegetarian</option>
+                            <option>Non-Vegetarian</option>
+                            <option>Vegan</option>
+                        </select>
+                        <button @click="triggerDietAi()" :disabled="toolLoading" class="px-4 py-2 btn-pink-gradient font-bold">Generate Diet Plan</button>
+                    </div>
+                    <div x-show="dietResult" class="p-4 rounded-xl bg-black/40 border border-white/10 text-xs leading-relaxed prose prose-invert max-w-none" x-html="renderMarkdown(dietResult)"></div>
+                </div>
+
+                <!-- TAB: FOOD LENS -->
+                <div x-show="currentWellnessTab === 'food'" class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                    <h3 class="font-bold text-sm text-brand-cyan">🥪 AI Smart Food Lens & Nutrition Calculator</h3>
+                    <div class="flex gap-2">
+                        <input type="text" x-model="foodQuery" placeholder="What did you eat? e.g. 2 Samosas and a cup of Chai" class="flex-1 px-4 py-2 st-input text-xs">
+                        <button @click="triggerFoodAi()" :disabled="toolLoading" class="px-4 py-2 btn-pink-gradient text-xs font-bold">Calculate Calories</button>
+                    </div>
+                    <div x-show="foodResult" class="p-4 rounded-xl bg-black/40 border border-white/10 text-xs leading-relaxed prose prose-invert max-w-none" x-html="renderMarkdown(foodResult)"></div>
+                </div>
+
+                <!-- TAB: LAB REPORT ANALYZER -->
+                <div x-show="currentWellnessTab === 'lab'" class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                    <h3 class="font-bold text-sm text-brand-cyan">🔬 AI Lab Report & Bio-Marker Simplifier</h3>
+                    <textarea x-model="labReportText" rows="3" placeholder="Paste test values: e.g. Haemoglobin: 10.5 g/dL, Total Cholesterol: 240 mg/dL" class="w-full p-3 st-input text-xs"></textarea>
+                    <button @click="triggerLabAi()" :disabled="toolLoading" class="px-4 py-2 btn-pink-gradient text-xs font-bold">Simplify Lab Values</button>
+                    <div x-show="labResult" class="p-4 rounded-xl bg-black/40 border border-white/10 text-xs leading-relaxed prose prose-invert max-w-none" x-html="renderMarkdown(labResult)"></div>
+                </div>
+
+                <!-- TAB: SAVINGS -->
+                <div x-show="currentWellnessTab === 'savings'" class="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                    <h3 class="font-bold text-sm text-brand-cyan">💰 Jan Aushadhi Generic Medicine Savings Finder</h3>
+                    <div class="flex gap-2">
+                        <input type="text" x-model="brandMedicine" placeholder="Enter branded medicine name: e.g. Crocin, Augmentin, Lipitor" class="flex-1 px-4 py-2 st-input text-xs">
+                        <button @click="triggerSavingsAi()" :disabled="toolLoading" class="px-4 py-2 btn-pink-gradient text-xs font-bold">Compare Prices</button>
+                    </div>
+                    <div x-show="savingsResult" class="p-4 rounded-xl bg-black/40 border border-white/10 text-xs leading-relaxed prose prose-invert max-w-none" x-html="renderMarkdown(savingsResult)"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Application Controller Logic -->
+    <script>
+        function sehaatOriginalApp() {
+            return {
+                // Screen Gate: False shows Registration Form, True shows Full App
+                profileComplete: false,
+                sidebarOpen: window.innerWidth >= 1024,
+
+                // Patient Profile Data
+                patient: {
+                    name: '',
+                    age: 25,
+                    gender: 'Male',
+                    weight: 60.00,
+                    conditions: '',
+                    allergies: ''
+                },
+
+                // Service Mode Radio in Sidebar
+                serviceMode: 'consult',
+
+                // Doctor Configuration
+                doctorList: [],
+                selectedDoctorRole: 'General Physician (General Medicine)',
+                activeDoctorName: 'General Physician',
+                selectedLanguage: 'English',
+                showPatientExpander: false,
+                autoSpeakEnabled: false,
+
+                // Location Settings
+                statesList: [],
+                districtList: [],
+                selectedState: 'Bihar',
+                selectedDistrict: 'Patna',
+                hospitals: [],
+                showSosAlert: false,
+
+                // Chat Messages & State
+                messages: [],
+                userInput: '',
+                isLoading: false,
+                isStreaming: false,
+                currentStreamChunk: '',
+                attachedReportName: '',
+                attachedReportText: '',
+
+                // Voice Web Speech
+                speechRec: null,
+                isListening: false,
+
+                // Audio CPR Metronome
+                cprBeepActive: false,
+                cprInterval: null,
+                audioCtx: null,
+
+                // Suggested Questions per Specialty
+                suggestionMap: {
+                    "General Physician (General Medicine)": [
+                        "🤕 I have high fever and headache",
+                        "🤧 Cold with sore throat treatment",
+                        "🤢 Feeling nauseous and dizzy",
+                        "🤠 Lower back pain relief",
+                        "💊 Best medicine for mild fever?",
+                        "🌡️ How to treat viral weakness?",
+                        "🍲 Diet during recovery from illness?",
+                        "⚠️ High fever red flags"
+                    ],
+                    "Cardiologist (Heart Specialist)": [
+                        "🫀 Chest tightness after stairs",
+                        "💓 Heart palpitations at night",
+                        "🩸 Safe blood pressure numbers?",
+                        "🥗 DASH diet food recommendations"
+                    ],
+                    "Neurologist (Brain & Nerves)": [
+                        "⚡ Sharp throbbing migraine pain",
+                        "😴 Restless legs at night",
+                        "🧠 Brain fog and concentration",
+                        "🤕 Tension headache relief"
+                    ],
+                    "Pediatrician (Child Specialist)": [
+                        "👶 Baby has 101F fever",
+                        "🍼 Child not drinking milk",
+                        "💉 Next vaccines for 6-month baby",
+                        "🤧 Safe child cough syrup"
+                    ]
+                },
+                suggestionPage: 0,
+                suggestionsPerPage: 4,
+
+                // Wellness Tools Tab State
+                currentWellnessTab: 'bmi',
+                bmiHeight: 170,
+                waterLiters: 1.25,
+                medReminder: { name: '', dose: '', time: '09:00' },
+                toolLoading: false,
+                dietPlanGoal: 'Weight Loss',
+                dietPlanType: 'Vegetarian',
+                dietResult: '',
+                foodQuery: '',
+                foodResult: '',
+                labReportText: '',
+                labResult: '',
+                brandMedicine: '',
+                savingsResult: '',
+
+                wellnessTabList: [
+                    { id: 'bmi', emoji: '⚖️', name: 'BMI' },
+                    { id: 'reminders', emoji: '📅', name: 'Reminders' },
+                    { id: 'hydration', emoji: '💧', name: 'Hydration' },
+                    { id: 'diet', emoji: '🥗', name: 'Diet' },
+                    { id: 'food', emoji: '🥪', name: 'Food Lens' },
+                    { id: 'lab', emoji: '🔬', name: 'Lab Analyzer' },
+                    { id: 'savings', emoji: '💰', name: 'Savings' }
+                ],
+
+                async initApp() {
+                    // Check if already registered in localStorage
+                    const savedProfile = localStorage.getItem('sehaat_patient_profile');
+                    if (savedProfile) {
+                        try {
+                            this.patient = JSON.parse(savedProfile);
+                            this.profileComplete = true;
+                        } catch (e) {}
+                    }
+
+                    // Load system configuration
+                    try {
+                        const res = await fetch('/api/config');
+                        const data = await res.json();
+                        this.doctorList = data.doctors || [];
+                        this.statesList = data.states || [];
+                    } catch (e) {}
+
+                    this.fetchHospitals();
+                    this.setupVoiceInput();
+                },
+
+                submitRegistration() {
+                    if (!this.patient.name.trim()) {
+                        alert('Please enter your Full Name to continue.');
+                        return;
+                    }
+                    this.profileComplete = true;
+                    localStorage.setItem('sehaat_patient_profile', JSON.stringify(this.patient));
+                },
+
+                onDoctorRoleChange() {
+                    const match = this.doctorList.find(d => d.id === this.selectedDoctorRole);
+                    this.activeDoctorName = match ? match.name : this.selectedDoctorRole.split('(')[0].trim();
+                    this.suggestionPage = 0;
+                },
+
+                get currentSuggestedQuestions() {
+                    const list = this.suggestionMap[this.selectedDoctorRole] || this.suggestionMap["General Physician (General Medicine)"];
+                    const start = this.suggestionPage * this.suggestionsPerPage;
+                    return list.slice(start, start + this.suggestionsPerPage);
+                },
+
+                get totalSuggestionPages() {
+                    const list = this.suggestionMap[this.selectedDoctorRole] || this.suggestionMap["General Physician (General Medicine)"];
+                    return Math.ceil(list.length / this.suggestionsPerPage);
+                },
+
+                nextSuggestionPage() {
+                    if (this.suggestionPage < this.totalSuggestionPages - 1) {
+                        this.suggestionPage++;
+                    } else {
+                        this.suggestionPage = 0;
+                    }
+                },
+
+                prevSuggestionPage() {
+                    if (this.suggestionPage > 0) {
+                        this.suggestionPage--;
+                    } else {
+                        this.suggestionPage = this.totalSuggestionPages - 1;
+                    }
+                },
+
+                sendDirectQuestion(question) {
+                    this.userInput = question;
+                    this.sendTextMessage();
+                },
+
+                async sendTextMessage() {
+                    const text = this.userInput.trim();
+                    if (!text && !this.attachedReportText) return;
+
+                    let finalPrompt = text;
+                    if (this.attachedReportText) {
+                        finalPrompt += `\n\n[ATTACHED REPORT DATA]:\n${this.attachedReportText}`;
+                    }
+
+                    this.messages.push({ role: 'user', content: finalPrompt });
+                    this.userInput = '';
+                    this.attachedReportName = '';
+                    this.attachedReportText = '';
+
+                    this.isLoading = true;
+                    this.isStreaming = true;
+                    this.currentStreamChunk = '';
+
+                    try {
+                        const response = await fetch('/api/chat/stream', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                doctor_role: this.selectedDoctorRole,
+                                patient_name: this.patient.name,
+                                patient_age: parseInt(this.patient.age) || 25,
+                                patient_gender: this.patient.gender,
+                                patient_weight: parseFloat(this.patient.weight) || 60.0,
+                                patient_conditions: this.patient.conditions || 'None',
+                                patient_allergies: this.patient.allergies || 'None',
+                                messages: this.messages
+                            })
+                        });
+
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder();
+                        let accumulated = '';
+
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            const chunk = decoder.decode(value, { stream: true });
+                            const lines = chunk.split('\n');
+                            for (const line of lines) {
+                                if (line.startsWith('data: ')) {
+                                    const dataStr = line.slice(6).trim();
+                                    if (dataStr === '[DONE]') break;
+                                    try {
+                                        const parsed = JSON.parse(dataStr);
+                                        if (parsed.chunk) {
+                                            accumulated += parsed.chunk;
+                                            this.currentStreamChunk = accumulated;
+                                        }
+                                    } catch (e) {}
+                                }
+                            }
+                        }
+
+                        this.messages.push({ role: 'assistant', content: accumulated });
+                        this.currentStreamChunk = '';
+                        this.isStreaming = false;
+                        this.isLoading = false;
+
+                        if (this.autoSpeakEnabled) {
+                            this.speakText(accumulated);
+                        }
+                    } catch (e) {
+                        this.isStreaming = false;
+                        this.isLoading = false;
+                        this.messages.push({ role: 'assistant', content: `⚠️ Consultation error: ${e.message}` });
+                    }
+                },
+
+                renderMarkdown(text) {
+                    if (!text) return '';
+                    return marked.parse(text);
+                },
+
+                speakText(text) {
+                    if (!('speechSynthesis' in window)) return;
+                    window.speechSynthesis.cancel();
+                    const cleanText = text.replace(/[*#_`]/g, '');
+                    const utterance = new SpeechSynthesisUtterance(cleanText);
+                    utterance.rate = 1.0;
+                    window.speechSynthesis.speak(utterance);
+                },
+
+                async uploadReportFile(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    try {
+                        const res = await fetch('/api/upload-report', { method: 'POST', body: fd });
+                        const data = await res.json();
+                        this.attachedReportName = data.filename;
+                        this.attachedReportText = data.extracted_text;
+                    } catch (err) {
+                        alert('Could not parse report');
+                    }
+                },
+
+                async downloadPrescription(adviceText) {
+                    try {
+                        const res = await fetch('/api/generate-rx', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                patient_name: this.patient.name,
+                                age: parseInt(this.patient.age) || 25,
+                                gender: this.patient.gender,
+                                weight: parseFloat(this.patient.weight) || 60.0,
+                                conditions: this.patient.conditions || 'General Consultation',
+                                advice: adviceText,
+                                doctor_name: this.activeDoctorName
+                            })
+                        });
+                        const blob = await res.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Prescription_${this.patient.name}.pdf`;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    } catch (e) {
+                        alert('Could not download Rx PDF');
+                    }
+                },
+
+                setupVoiceInput() {
+                    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (SpeechRec) {
+                        this.speechRec = new SpeechRec();
+                        this.speechRec.continuous = false;
+                        this.speechRec.lang = 'en-IN';
+                        this.speechRec.onresult = (e) => {
+                            this.userInput = e.results[0][0].transcript;
+                            this.isListening = false;
+                        };
+                        this.speechRec.onerror = () => { this.isListening = false; };
+                        this.speechRec.onend = () => { this.isListening = false; };
+                    }
+                },
+
+                toggleMicSpeech() {
+                    if (!this.speechRec) {
+                        alert('Speech recognition is not supported in this browser. Please use Chrome/Edge.');
+                        return;
+                    }
+                    if (this.isListening) {
+                        this.speechRec.stop();
+                        this.isListening = false;
+                    } else {
+                        this.speechRec.start();
+                        this.isListening = true;
+                    }
+                },
+
+                resetConversation() {
+                    this.messages = [];
+                },
+
+                onStateChange() {
+                    this.fetchHospitals();
+                },
+
+                async fetchHospitals() {
+                    try {
+                        const res = await fetch(`/api/hospitals?state=${encodeURIComponent(this.selectedState)}&district=${encodeURIComponent(this.selectedDistrict)}`);
+                        const data = await res.json();
+                        this.districtList = data.available_districts || [];
+                        this.hospitals = data.hospitals || [];
+                    } catch (e) {}
+                },
+
+                async downloadOpdSlip(hospName) {
+                    try {
+                        const res = await fetch('/api/generate-opd-ticket', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                hospital: hospName,
+                                patient_name: this.patient.name,
+                                time_slot: 'Within 45 Minutes'
+                            })
+                        });
+                        const blob = await res.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `OPD_Slip_${this.patient.name}.pdf`;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    } catch (e) {
+                        alert('Could not download OPD slip');
+                    }
+                },
+
+                toggleCprBeep() {
+                    this.cprBeepActive = !this.cprBeepActive;
+                    if (this.cprBeepActive) {
+                        if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        this.cprInterval = setInterval(() => {
+                            try {
+                                const osc = this.audioCtx.createOscillator();
+                                const gain = this.audioCtx.createGain();
+                                osc.frequency.value = 850;
+                                gain.gain.value = 0.2;
+                                osc.connect(gain);
+                                gain.connect(this.audioCtx.destination);
+                                osc.start();
+                                osc.stop(this.audioCtx.currentTime + 0.08);
+                            } catch (e) {}
+                        }, 545);
+                    } else {
+                        clearInterval(this.cprInterval);
+                    }
+                },
+
+                calcBmi() {
+                    const h_m = this.bmiHeight / 100;
+                    const val = (this.patient.weight / (h_m * h_m)).toFixed(1);
+                    let status = "Normal";
+                    let tip = "Maintain balanced diet and hydration!";
+                    if (val < 18.5) { status = "Underweight"; tip = "Eat more nutrient-dense protein!"; }
+                    else if (val >= 25 && val < 30) { status = "Overweight"; tip = "Try 30 mins cardio daily."; }
+                    else if (val >= 30) { status = "Obese"; tip = "Consult dietitian and monitor BP/sugar."; }
+                    return { val: val, status: status, tip: tip };
+                },
+
+                async downloadIcsFile() {
+                    if (!this.medReminder.name) return alert('Enter medicine name');
+                    try {
+                        const res = await fetch('/api/generate-ics', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                med_name: this.medReminder.name,
+                                dosage: this.medReminder.dose || '1 dose',
+                                time_str: this.medReminder.time || '09:00'
+                            })
+                        });
+                        const blob = await res.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Reminder_${this.medReminder.name}.ics`;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    } catch (e) {}
+                },
+
+                async triggerDietAi() {
+                    this.toolLoading = true;
+                    this.dietResult = '';
+                    try {
+                        const res = await fetch('/api/tool-ai', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                tool_type: 'diet',
+                                payload: { age: this.patient.age, weight: this.patient.weight, height: this.bmiHeight, goal: this.dietPlanGoal, diet: this.dietPlanType, cuisine: 'North Indian' }
+                            })
+                        });
+                        const data = await res.json();
+                        this.dietResult = data.result;
+                    } catch (e) {}
+                    this.toolLoading = false;
+                },
+
+                async triggerFoodAi() {
+                    if (!this.foodQuery) return;
+                    this.toolLoading = true;
+                    this.foodResult = '';
+                    try {
+                        const res = await fetch('/api/tool-ai', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ tool_type: 'food_lens', payload: { query: this.foodQuery } })
+                        });
+                        const data = await res.json();
+                        this.foodResult = data.result;
+                    } catch (e) {}
+                    this.toolLoading = false;
+                },
+
+                async triggerLabAi() {
+                    if (!this.labReportText) return;
+                    this.toolLoading = true;
+                    this.labResult = '';
+                    try {
+                        const res = await fetch('/api/tool-ai', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ tool_type: 'lab_simplifier', payload: { report: this.labReportText } })
+                        });
+                        const data = await res.json();
+                        this.labResult = data.result;
+                    } catch (e) {}
+                    this.toolLoading = false;
+                },
+
+                async triggerSavingsAi() {
+                    if (!this.brandMedicine) return;
+                    this.toolLoading = true;
+                    this.savingsResult = '';
+                    try {
+                        const res = await fetch('/api/tool-ai', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ tool_type: 'generic_savings', payload: { medicine: this.brandMedicine } })
+                        });
+                        const data = await res.json();
+                        this.savingsResult = data.result;
+                    } catch (e) {}
+                    this.toolLoading = false;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
