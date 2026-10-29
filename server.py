@@ -46,7 +46,7 @@ except Exception:
     PYTESSERACT_AVAILABLE = False
 
 # Initialize FastAPI App
-app = FastAPI(title="Sehaat Saathi - AI Doctor & Healthcare Platform", version="2.0.0")
+app = FastAPI(title="Sehaat Saathi App - AI Doctor & Healthcare Platform", version="2.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -286,7 +286,7 @@ class ToolAIRequest(BaseModel):
 
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health_check():
-    return {"status": "ok", "app": "SehaatSaathi"}
+    return {"status": "ok", "app": "SehaatSaathiApp"}
 
 @app.api_route("/api/config", methods=["GET", "HEAD"])
 async def get_config():
@@ -602,8 +602,8 @@ self.addEventListener('fetch', e => {
 async def pwa_manifest():
     """PWA Web App Manifest for mobile Add-to-Home-Screen."""
     manifest = {
-        "name": "SehaatSaathi - AI Doctor",
-        "short_name": "SehaatSaathi",
+        "name": "Sehaat Saathi App - AI Doctor",
+        "short_name": "SehaatSaathiApp",
         "description": "India's 1st AI Powered Virtual HealthCare Platform",
         "start_url": "/",
         "display": "standalone",

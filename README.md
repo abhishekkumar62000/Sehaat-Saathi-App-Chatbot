@@ -1,4 +1,4 @@
-# SehaatSaathi – AI Doctor Chatbot 🧑‍⚕️
+# Sehaat Saathi App – AI Doctor Chatbot 🧑‍⚕️
 
 > **India's 1st AI Powered Virtual HealthCare Platform** — FastAPI + Groq AI + Tailwind CSS
 
