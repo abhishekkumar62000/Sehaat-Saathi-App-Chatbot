@@ -118,6 +118,39 @@ class PrescriptionPDF(FPDF):
         self.set_text_color(120, 120, 120)
         self.cell(0, 5, 'AI Clinical Tele-Consultation. In severe emergency, call 112 / 108.', 0, 1, 'C')
 
+def sanitize_pdf_text(text: str) -> str:
+    if not text:
+        return ""
+    replacements = {
+        '•': '-',
+        '–': '-',
+        '—': '-',
+        '‘': "'",
+        '’': "'",
+        '“': '"',
+        '”': '"',
+        '…': '...',
+        '°': ' deg ',
+        '₹': 'Rs. ',
+        '™': '(TM)',
+        '©': '(C)',
+        '®': '(R)',
+        '🚨': '[ALERT] ',
+        '⚠️': '[NOTE] ',
+        '🩺': '',
+        '👨‍⚕️': '',
+        '👩‍⚕️': '',
+        '💊': '',
+        '🇮🇳': '[India]',
+        '✅': '[OK]',
+        '❌': '[X]',
+        '🛡️': '[SAFETY] ',
+        '📋': '[SUMMARY] '
+    }
+    for orig, rep in replacements.items():
+        text = text.replace(orig, rep)
+    return text.encode('latin-1', 'replace').decode('latin-1')
+
 def create_prescription_pdf(patient_name, age, gender, weight, conditions, advice, doctor_name="Dr. Sehaat (General Physician)"):
     pdf = PrescriptionPDF()
     pdf.add_page()
@@ -169,17 +202,21 @@ def create_prescription_pdf(patient_name, age, gender, weight, conditions, advic
     pdf.cell(0, 7, f"ATTENDING SPECIALIST: {doctor_name.upper()}", ln=True)
     pdf.ln(2)
     
-    # Clean emojis for Latin-1 PDF encoding
-    clean_advice = advice.replace("👨‍⚕️", "").replace("💊", "•").replace("🩺", "").replace("✅", "[x]").replace("⚠️", "Caution: ").replace("🫀", "").replace("🧠", "").replace("🦴", "").replace("👶", "").replace("💅", "").replace("👂", "").replace("👩‍⚕️", "").replace("🔬", "").replace("🌱", "").replace("🤝", "")
+    # Clean tags and emojis for Latin-1 PDF encoding
+    clean_advice = advice
+    for tag in ["[TRIAGE: MILD]", "[TRIAGE: MODERATE]", "[TRIAGE: EMERGENCY]"]:
+        clean_advice = clean_advice.replace(tag, "")
+    clean_advice = re.sub(r'(?:\*\*|`?)\s*\[(JAN_AUSHADHI|SAFETY_GUARDRAIL|QUICK_OPTIONS|LAB_INTERPRETER|DRUG_INTERACTION|RED_FLAG_MONITOR|OPD_QUESTIONS):.*?\]\s*(?:\*\*|`?)', '', clean_advice)
+    clean_advice = sanitize_pdf_text(clean_advice)
     pdf.set_font("Times", '', 11)
     pdf.set_text_color(25, 25, 25)
     
     for line in clean_advice.split('\n'):
-        line_clean = line.strip().encode('latin-1', 'replace').decode('latin-1')
+        line_clean = line.strip()
         if not line_clean:
             pdf.ln(2)
             continue
-        if ":" in line_clean and len(line_clean) < 40 and not line_clean.startswith("•"):
+        if ":" in line_clean and len(line_clean) < 40 and not line_clean.startswith("-"):
             pdf.ln(2)
             pdf.set_font("Times", 'B', 11)
             pdf.multi_cell(0, 6, line_clean)
@@ -246,6 +283,209 @@ END:VEVENT
 END:VCALENDAR"""
     return ics_content.encode('utf-8')
 
+def create_clinic_summary_pdf(patient_name, age, gender, weight, conditions, allergies, doctor_name, chief_complaint, conversation_summary, triage_level="MILD"):
+    import re
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    
+    # Header Banner - Medical Navy Blue
+    pdf.set_fill_color(15, 23, 42)
+    pdf.rect(0, 0, 210, 36, 'F')
+    
+    # Indian Tricolor Stripe Accent
+    pdf.set_fill_color(255, 153, 51)
+    pdf.rect(0, 36, 70, 2.5, 'F')
+    pdf.set_fill_color(255, 255, 255)
+    pdf.rect(70, 36, 70, 2.5, 'F')
+    pdf.set_fill_color(19, 136, 8)
+    pdf.rect(140, 36, 70, 2.5, 'F')
+    
+    # Header Title
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font('Times', 'B', 17)
+    pdf.set_xy(10, 7)
+    pdf.cell(190, 8, 'SEHAAT SAATHI APP - CLINICAL INTAKE BRIEF', 0, 1, 'C')
+    pdf.set_font('Arial', 'I', 8.5)
+    pdf.cell(190, 4.5, 'Standardized Case Summary Sheet for Consulting Registered Physician (MBBS / MD / Specialist)', 0, 1, 'C')
+    pdf.set_font('Arial', '', 7.5)
+    pdf.cell(190, 4, 'Patient-Assisted Clinical Tele-History | National Digital Health Mission (NDHM) Intake Format', 0, 1, 'C')
+    
+    # Patient Demographic Card
+    pdf.set_y(44)
+    pdf.set_fill_color(248, 250, 252)
+    pdf.set_draw_color(0, 51, 102)
+    pdf.rect(10, 44, 190, 30, 'DF')
+    
+    pdf.set_text_color(0, 51, 102)
+    pdf.set_font("Arial", 'B', 10.5)
+    pdf.set_xy(15, 47)
+    pdf.cell(90, 5.5, f"PATIENT: {patient_name.upper()}")
+    pdf.set_font("Arial", '', 8.5)
+    pdf.set_text_color(80, 80, 80)
+    pdf.set_xy(110, 47)
+    pdf.cell(85, 5.5, f"SUMMARY DATE: {datetime.datetime.now().strftime('%d-%m-%Y %H:%M')}", align='R')
+    
+    pdf.set_xy(15, 53.5)
+    pdf.set_font("Arial", 'B', 8.5)
+    pdf.set_text_color(0, 51, 102)
+    pdf.cell(30, 5.5, "AGE / GENDER:")
+    pdf.set_font("Arial", '', 8.5)
+    pdf.set_text_color(30, 30, 30)
+    pdf.cell(35, 5.5, f"{age} Yrs / {gender}")
+    
+    pdf.set_font("Arial", 'B', 8.5)
+    pdf.set_text_color(0, 51, 102)
+    pdf.cell(20, 5.5, "WEIGHT:")
+    pdf.set_font("Arial", '', 8.5)
+    pdf.set_text_color(30, 30, 30)
+    pdf.cell(25, 5.5, f"{weight} kg")
+    
+    triage_str = (triage_level or "MILD").upper()
+    pdf.set_xy(15, 60)
+    pdf.set_font("Arial", 'B', 8.5)
+    pdf.set_text_color(0, 51, 102)
+    pdf.cell(30, 5.5, "TRIAGE LEVEL:")
+    if "EMERGENCY" in triage_str:
+        pdf.set_text_color(180, 0, 0)
+        pdf.set_font("Arial", 'B', 8.5)
+        pdf.cell(60, 5.5, "[!] HIGH PRIORITY - EMERGENCY ALERT")
+    elif "MODERATE" in triage_str:
+        pdf.set_text_color(180, 100, 0)
+        pdf.set_font("Arial", 'B', 8.5)
+        pdf.cell(60, 5.5, "[~] MODERATE - CLINICAL EVALUATION ADVISED")
+    else:
+        pdf.set_text_color(0, 120, 50)
+        pdf.set_font("Arial", 'B', 8.5)
+        pdf.cell(60, 5.5, "[v] MILD CARE - ROUTINE INTAKE")
+        
+    pdf.set_xy(15, 66.5)
+    pdf.set_font("Arial", 'B', 8.5)
+    pdf.set_text_color(0, 51, 102)
+    pdf.cell(30, 5.5, "CONSULTED ROLE:")
+    pdf.set_font("Arial", '', 8.5)
+    pdf.set_text_color(30, 30, 30)
+    clean_role = sanitize_pdf_text(doctor_name)
+    pdf.cell(0, 5.5, f"{clean_role}")
+    
+    current_y = 78
+    
+    # Allergy Alert Box (If patient has known allergy)
+    allergies_clean = (allergies or "").strip()
+    if allergies_clean and allergies_clean.lower() not in ["none", "no", "n/a"]:
+        pdf.set_fill_color(254, 242, 242)
+        pdf.set_draw_color(220, 38, 38)
+        pdf.rect(10, current_y, 190, 8.5, 'DF')
+        pdf.set_xy(15, current_y + 1)
+        pdf.set_font("Arial", 'B', 8.5)
+        pdf.set_text_color(185, 28, 28)
+        safe_allergies = sanitize_pdf_text(allergies_clean.upper())
+        pdf.cell(0, 6.5, f"*** CRITICAL ALLERGY FLAG: Documented Patient Allergy to [{safe_allergies}] ***")
+        current_y += 11.5
+
+    # Comorbidities Box
+    conditions_clean = (conditions or "").strip()
+    if conditions_clean and conditions_clean.lower() not in ["none", "no", "n/a"]:
+        pdf.set_fill_color(240, 249, 255)
+        pdf.set_draw_color(2, 132, 199)
+        pdf.rect(10, current_y, 190, 7.5, 'DF')
+        pdf.set_xy(15, current_y + 1)
+        pdf.set_font("Arial", 'B', 8)
+        pdf.set_text_color(3, 105, 161)
+        safe_conditions = sanitize_pdf_text(conditions_clean.upper())
+        pdf.cell(0, 5.5, f"DOCUMENTED COMORBIDITIES: {safe_conditions}")
+        current_y += 10.5
+
+    # Section 1: Chief Complaints & Symptoms
+    pdf.set_y(current_y)
+    pdf.set_font("Arial", 'B', 10)
+    pdf.set_text_color(0, 51, 102)
+    pdf.cell(190, 5.5, "1. CHIEF COMPLAINTS & PATIENT-REPORTED SYMPTOMS (HPI)", ln=True)
+    pdf.set_draw_color(0, 51, 102)
+    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+    pdf.ln(2.5)
+    
+    pdf.set_font("Arial", '', 8.5)
+    pdf.set_text_color(30, 30, 30)
+    complaint_text = chief_complaint or "Patient reported symptoms requiring clinical intake."
+    clean_complaint = sanitize_pdf_text(complaint_text)
+    pdf.multi_cell(190, 4.5, f"Reported Symptoms: {clean_complaint}")
+    pdf.ln(3)
+    
+    # Section 2: Clinical Summary & Advice Recorded
+    pdf.set_font("Arial", 'B', 10)
+    pdf.set_text_color(0, 51, 102)
+    pdf.cell(190, 5.5, "2. AI CLINICAL INTAKE & CASE DISCUSSION SUMMARY", ln=True)
+    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+    pdf.ln(2.5)
+    
+    # Clean conversation summary
+    clean_summary = conversation_summary
+    for tag in ["[TRIAGE: MILD]", "[TRIAGE: MODERATE]", "[TRIAGE: EMERGENCY]"]:
+        clean_summary = clean_summary.replace(tag, "")
+    clean_summary = re.sub(r'(?:\*\*|`?)\s*\[(JAN_AUSHADHI|SAFETY_GUARDRAIL|QUICK_OPTIONS|LAB_INTERPRETER|DRUG_INTERACTION|RED_FLAG_MONITOR|OPD_QUESTIONS):.*?\]\s*(?:\*\*|`?)', '', clean_summary)
+    clean_summary = sanitize_pdf_text(clean_summary)
+    
+    pdf.set_font("Times", '', 9.5)
+    pdf.set_text_color(25, 25, 25)
+    
+    lines_printed = 0
+    for line in clean_summary.split('\n'):
+        line_clean = line.strip()
+        if not line_clean:
+            continue
+        if lines_printed > 14:
+            pdf.multi_cell(190, 4.2, "... [Detailed ongoing conversation logged in Sehaat Saathi App database]")
+            break
+        pdf.multi_cell(190, 4.2, f"- {line_clean}")
+        lines_printed += 1
+        
+    pdf.ln(3)
+    
+    # Section 3: Physical Doctor's Examination & Rx Box (For the real doctor to fill!)
+    if pdf.get_y() > 218:
+        pdf.add_page()
+    
+    pdf.set_font("Arial", 'B', 9.5)
+    pdf.set_text_color(0, 51, 102)
+    pdf.cell(190, 5.5, "3. CONSULTING PHYSICIAN'S PHYSICAL EXAMINATION & CLINICAL Rx", ln=True)
+    pdf.set_draw_color(0, 51, 102)
+    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+    pdf.ln(2.5)
+    
+    pdf.set_fill_color(255, 255, 255)
+    pdf.set_draw_color(180, 180, 180)
+    box_height = 38
+    pdf.rect(10, pdf.get_y(), 190, box_height)
+    
+    pdf.set_font("Arial", '', 8)
+    pdf.set_text_color(90, 90, 90)
+    vitals_y = pdf.get_y() + 2.5
+    pdf.set_xy(13, vitals_y)
+    pdf.cell(184, 4.5, "Physical Vitals:  BP: ______ / ______ mmHg   |   Pulse: ______ bpm   |   SpO2: ______ %   |   Temp: ______ F")
+    
+    pdf.set_xy(13, vitals_y + 7)
+    pdf.cell(184, 4.5, "Clinical Findings (Chest / Abdomen / ENT): __________________________________________________________________")
+    
+    pdf.set_xy(13, vitals_y + 14.5)
+    pdf.cell(184, 4.5, "Final Diagnosis: _____________________________________________________________________________________________")
+    
+    pdf.set_xy(13, vitals_y + 22)
+    pdf.cell(184, 4.5, "Rx / Lab Tests Advised: ______________________________________________________________________________________")
+    
+    pdf.set_xy(110, vitals_y + 29)
+    pdf.set_font("Arial", 'B', 7.5)
+    pdf.set_text_color(0, 51, 102)
+    pdf.cell(85, 4.5, "Physician Signature & Reg. Stamp: ________________________", align='R')
+    
+    # Disclaimer Footer
+    pdf.set_y(-14)
+    pdf.set_font("Arial", 'I', 7)
+    pdf.set_text_color(120, 120, 120)
+    pdf.multi_cell(190, 3.2, "DISCLAIMER: This clinical brief was generated by Sehaat Saathi App based on patient-reported tele-intake to save the physician's history-taking time. Final diagnosis, prescription, and treatment decisions remain at the sole discretion of the registered medical practitioner.", align='C')
+    
+    return pdf.output(dest='S').encode('latin-1')
+
 # --- Pydantic Request Models ---
 class ChatMessage(BaseModel):
     role: str
@@ -279,6 +519,18 @@ class ReminderRequest(BaseModel):
     med_name: str
     dosage: str
     time_str: str
+
+class ClinicSummaryRequest(BaseModel):
+    patient_name: str
+    age: int
+    gender: str
+    weight: float
+    conditions: Optional[str] = "None"
+    allergies: Optional[str] = "None"
+    doctor_name: Optional[str] = "Dr. Sehaat (General Physician)"
+    chief_complaint: Optional[str] = ""
+    triage_level: Optional[str] = "MILD"
+    conversation_summary: Optional[str] = ""
 
 class ToolAIRequest(BaseModel):
     tool_type: str
@@ -455,6 +707,27 @@ async def download_rx(req: RxRequest):
         content=pdf_bytes,
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename=SehaatSaathi_Prescription_{safe_name}.pdf"}
+    )
+
+@app.post("/api/generate-clinic-summary")
+async def download_clinic_summary_endpoint(req: ClinicSummaryRequest):
+    pdf_bytes = create_clinic_summary_pdf(
+        patient_name=req.patient_name,
+        age=req.age,
+        gender=req.gender,
+        weight=req.weight,
+        conditions=req.conditions,
+        allergies=req.allergies,
+        doctor_name=req.doctor_name,
+        chief_complaint=req.chief_complaint,
+        conversation_summary=req.conversation_summary,
+        triage_level=req.triage_level
+    )
+    safe_name = req.patient_name.replace(" ", "_")
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=Clinic_Summary_{safe_name}.pdf"}
     )
 
 @app.post("/api/generate-opd-ticket")

@@ -2,7 +2,7 @@
 <html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>Sehaat Saathi App - Your AI Doctor & Smart Health Assistant</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,51 +36,51 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: radial-gradient(circle at 50% 15%, #18153d 0%, #0c0926 50%, #060417 100%);
+            background-attachment: fixed;
             color: #ffffff;
             min-height: 100vh;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            touch-action: manipulation;
         }
 
         h1, h2, h3, h4, .font-heading {
             font-family: 'Outfit', sans-serif;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* 🇮🇳 Spinning Ashoka Chakra Watermark */
+        /* 🇮🇳 Spinning Ashoka Chakra Watermark - GPU Layered */
         @keyframes spinSVG {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
         @keyframes pulseChakra {
-            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.04; }
-            100% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.08; } 
+            0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.03; }
+            100% { transform: translate(-50%, -50%) scale(1.02); opacity: 0.07; } 
         }
         .ashoka-chakra-bg {
             position: fixed;
             top: 50%;
             left: 50%;
-            width: 70vh;
-            height: 70vh;
+            width: 70vmin;
+            height: 70vmin;
             z-index: 1; 
             pointer-events: none;
-            animation: pulseChakra 4s ease-in-out infinite alternate;
+            animation: pulseChakra 5s ease-in-out infinite alternate;
             transform-origin: center;
             transform: translate(-50%, -50%);
+            will-change: transform, opacity;
+            contain: strict;
         }
         .ashoka-chakra-bg svg {
-            animation: spinSVG 60s linear infinite;
+            animation: spinSVG 75s linear infinite;
             width: 100%;
             height: 100%;
         }
 
-        /* 🫧 Floating Medical Particles */
+        /* 🫧 Floating Medical Particles - GPU Layered */
         .floating-particles {
             position: fixed;
             top: 0;
@@ -90,20 +90,22 @@
             z-index: 1;
             pointer-events: none;
             overflow: hidden;
+            contain: strict;
         }
         .particle {
             position: absolute;
             bottom: -50px;
-            font-size: 30px;
-            color: rgba(255, 255, 255, 0.4);
-            animation: floatUp 16s linear infinite;
-            text-shadow: 0 0 10px rgba(0, 210, 255, 0.6);
+            font-size: 26px;
+            color: rgba(255, 255, 255, 0.35);
+            animation: floatUp 18s linear infinite;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+            will-change: transform, opacity;
         }
         @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+            0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translate3d(0, -110vh, 0) rotate(360deg); opacity: 0; }
         }
 
         /* 💓 The Vital Life Line Animation (ECG) */
@@ -394,27 +396,47 @@
 
             <!-- 2. Doctor Photo Card (Image 2 Clean Style) -->
             <div class="rounded-2xl overflow-hidden border border-white/10 bg-[#16203a]/60 shadow-lg">
-                <img src="/media/Doctor.png" alt="AI Doctor" class="w-full h-auto block rounded-2xl">
+                <img src="/media/doctor.png" alt="AI Doctor" class="w-full h-auto block rounded-2xl">
             </div>
 
             <!-- 3. Configuration Section (Image Ke Niche & Choose Service Mode Ke Upar) -->
-            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-3 text-xs">
-                <label class="block text-xs font-bold text-brand-cyan">⚙ Configuration</label>
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-[#0f1f3d]/90 to-[#0d1a30]/90 border border-cyan-500/40 space-y-3 text-xs shadow-lg shadow-cyan-900/20">
+                <!-- Section Header - Bold Highlighted -->
+                <div class="flex items-center gap-2 pb-2 border-b border-cyan-500/30">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-sm">
+                        <span class="text-sm">⚙️</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-white tracking-wide">Configuration</p>
+                        <p class="text-[10px] text-cyan-400/80 font-semibold">Customize Your AI Doctor</p>
+                    </div>
+                </div>
                 
                 <!-- Choose Doctor Role Dropdown -->
-                <div>
-                    <label class="block text-[11px] text-slate-300 font-medium mb-1">Choose Doctor Role 👨‍⚕️</label>
-                    <select x-model="selectedDoctorRole" @change="onDoctorRoleChange()" class="w-full px-2.5 py-2 st-input text-xs bg-[#121936]">
+                <div class="space-y-1.5">
+                    <label class="flex items-center gap-1.5 text-[12px] font-black text-cyan-300 uppercase tracking-wider">
+                        <span>👨‍⚕️</span>
+                        <span>Choose Doctor Role</span>
+                    </label>
+                    <select x-model="selectedDoctorRole" @change="onDoctorRoleChange()" class="w-full px-2.5 py-2 st-input text-xs bg-[#121936] border border-cyan-500/30 font-semibold text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30">
                         <template x-for="doc in doctorList" :key="doc.id">
                             <option :value="doc.id" x-text="doc.name + ' (' + doc.title + ')'"></option>
                         </template>
                     </select>
+                    <!-- Active Doctor Badge -->
+                    <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                        <span class="text-[10px] font-bold text-cyan-300">Currently Active Doctor</span>
+                    </div>
                 </div>
 
                 <!-- Language Selector -->
-                <div>
-                    <label class="block text-[11px] text-slate-300 font-medium mb-1">Select Response Language</label>
-                    <select x-model="selectedLanguage" class="w-full px-2.5 py-1.5 st-input text-xs bg-[#121936]">
+                <div class="space-y-1.5">
+                    <label class="flex items-center gap-1.5 text-[12px] font-black text-amber-300 uppercase tracking-wider">
+                        <span>🌐</span>
+                        <span>Response Language</span>
+                    </label>
+                    <select x-model="selectedLanguage" class="w-full px-2.5 py-1.5 st-input text-xs bg-[#121936] border border-amber-500/30 font-semibold text-white focus:border-amber-400">
                         <option>English</option>
                         <option>Hindi</option>
                     </select>
@@ -422,9 +444,9 @@
 
                 <!-- Patient Profile Expander -->
                 <div class="border border-white/10 rounded-xl overflow-hidden">
-                    <button @click="showPatientExpander = !showPatientExpander" class="w-full px-3 py-2 bg-white/5 flex items-center justify-between text-left text-xs text-slate-300 font-semibold">
-                        <span>👤 Patient Profile (Smart Context)</span>
-                        <span x-text="showPatientExpander ? '▲' : '▼'"></span>
+                    <button @click="showPatientExpander = !showPatientExpander" class="w-full px-3 py-2 bg-white/5 flex items-center justify-between text-left text-xs font-black text-slate-200 hover:bg-white/10 transition">
+                        <span class="flex items-center gap-1.5"><span>👤</span><span>Patient Profile (Smart Context)</span></span>
+                        <span x-text="showPatientExpander ? '▲' : '▼'" class="text-cyan-400"></span>
                     </button>
                     <div x-show="showPatientExpander" class="p-3 bg-black/30 space-y-1.5 text-[11px] text-slate-300">
                         <p>Name: <b class="text-brand-cyan" x-text="patient.name"></b></p>
@@ -436,7 +458,7 @@
                 </div>
 
                 <!-- Auto-Read Audio Toggle -->
-                <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-200 bg-white/5 px-3 py-2 rounded-xl border border-white/10 hover:border-white/20 transition">
                     <input type="checkbox" x-model="autoSpeakEnabled" class="accent-brand-cyan">
                     <span>🔊 Auto-Read AI Responses</span>
                 </label>
@@ -459,20 +481,57 @@
 
 
             <!-- 8. Developer Card (Image 2) -->
-            <div class="p-4 rounded-2xl bg-white/5 border border-white/10 text-center space-y-2 shadow-lg">
-                <h4 class="text-xs font-bold text-brand-cyan">👨‍💻 Developer</h4>
-                <img src="/media/pic.jpg" alt="Abhishek Yadav" class="w-24 h-24 rounded-2xl border-2 border-brand-cyan object-cover mx-auto shadow-md">
-                <h5 class="text-sm font-bold text-white">Abhishek ❤️ Yadav</h5>
-                <p class="text-[11px] font-semibold text-brand-cyan">Full Stack AI Developer</p>
-                <div class="flex justify-center gap-3 pt-1">
-                    <a href="https://abhi-yadav.vercel.app/" target="_blank" title="Portfolio">
-                        <img src="https://img.icons8.com/color/48/000000/portfolio.png" class="w-6 h-6 hover:scale-110 transition">
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-[#0d1a2e]/90 via-[#0f1f38]/90 to-[#0b1830]/90 border border-blue-500/30 text-center space-y-3 shadow-lg shadow-blue-900/20">
+                <!-- Header -->
+                <div class="flex items-center justify-center gap-2">
+                    <span class="text-base">👨‍💻</span>
+                    <h4 class="text-xs font-black text-cyan-300 uppercase tracking-widest">Developer & Founder</h4>
+                </div>
+                <!-- Founder Photo -->
+                <div class="relative inline-block mx-auto">
+                    <div class="w-32 h-32 rounded-2xl mx-auto overflow-hidden border-2 border-cyan-400 shadow-xl shadow-cyan-900/50 ring-4 ring-cyan-500/20 bg-slate-900">
+                        <img src="/media/Founder.jpeg?v=2" alt="Abhishek Kumar" class="w-full h-full" style="object-fit: cover; object-position: 46% 22%;">
+                    </div>
+                    <!-- Online badge -->
+                    <span class="absolute bottom-1 right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-[#0d1a2e] shadow-sm"></span>
+                </div>
+                <!-- Name & Title -->
+                <div class="space-y-0.5">
+                    <h5 class="text-sm font-black text-white tracking-wide">Abhishek Kumar</h5>
+                    <p class="text-[11px] font-bold text-cyan-400">Full Stack AI Developer</p>
+                    <p class="text-[10px] text-slate-400 font-medium">🚀 Founder, Sehaat Saathi</p>
+                </div>
+                <!-- Social Links -->
+                <div class="flex justify-center gap-4 pt-1">
+                    <!-- Instagram -->
+                    <a href="https://www.instagram.com/developer__abhiii" target="_blank" title="Instagram"
+                       class="flex flex-col items-center gap-0.5 group">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-pink-500 via-rose-500 to-orange-400 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </div>
+                        <span class="text-[9px] text-pink-400 font-semibold">Instagram</span>
                     </a>
-                    <a href="https://www.linkedin.com/in/abhishek-kumar-807853375/" target="_blank" title="LinkedIn">
-                        <img src="https://img.icons8.com/color/48/000000/linkedin.png" class="w-6 h-6 hover:scale-110 transition">
+                    <!-- LinkedIn -->
+                    <a href="https://www.linkedin.com/in/abhishek-kumar-807853375?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" title="LinkedIn"
+                       class="flex flex-col items-center gap-0.5 group">
+                        <div class="w-8 h-8 rounded-xl bg-[#0077B5] flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </div>
+                        <span class="text-[9px] text-blue-400 font-semibold">LinkedIn</span>
                     </a>
-                    <a href="https://github.com/abhishekkumar62000" target="_blank" title="GitHub">
-                        <img src="https://img.icons8.com/fluent/48/000000/github.png" class="w-6 h-6 hover:scale-110 transition">
+                    <!-- GitHub -->
+                    <a href="https://github.com/abhishekkumar62000" target="_blank" title="GitHub"
+                       class="flex flex-col items-center gap-0.5 group">
+                        <div class="w-8 h-8 rounded-xl bg-[#24292e] border border-white/10 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                        </div>
+                        <span class="text-[9px] text-slate-400 font-semibold">GitHub</span>
                     </a>
                 </div>
             </div>
@@ -492,7 +551,7 @@
         <!-- ========================================== -->
         <!-- MAIN CONTENT AREA (RESPONSIVE MOBILE APP)  -->
         <!-- ========================================== -->
-        <main class="flex-1 p-2.5 sm:p-5 md:p-8 overflow-y-auto max-h-screen space-y-3.5 md:space-y-6 w-full min-w-0 pb-24 lg:pb-8">
+        <main id="chatMain" class="flex-1 p-2 sm:p-4 md:p-6 lg:p-8 overflow-y-auto max-h-screen space-y-3.5 md:space-y-6 w-full min-w-0 pb-28 lg:pb-8 scroll-smooth">
             
             <!-- Sticky Top Navigation / Mobile App Bar -->
             <header class="flex items-center justify-between gap-2 p-2 sm:p-2.5 rounded-2xl bg-[#0a122c]/90 border border-white/10 backdrop-blur-xl sticky top-0 z-30 shadow-xl">
@@ -518,6 +577,12 @@
                         <span class="text-sm">🩺</span>
                         <span class="truncate max-w-[120px] sm:max-w-none" x-text="activeDoctorName"></span>
                         <span class="text-[9px] text-cyan-400 opacity-70">▼</span>
+                    </button>
+                    <button @click="downloadLatestClinicSummary()" 
+                            class="px-2.5 py-1 rounded-full bg-purple-950/80 hover:bg-purple-900 border border-purple-500/50 hover:border-purple-400 text-purple-200 hover:text-white font-bold text-[10px] sm:text-xs flex items-center gap-1 shadow-sm active:scale-95 transition"
+                            title="Download 1-Page Clinical Brief / Clinic Pass for your Doctor">
+                        <span>🏥</span>
+                        <span class="font-bold">Clinic Pass</span>
                     </button>
                     <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-semibold text-[10px]">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -589,8 +654,8 @@
                 <!-- Chat History / Messages Display -->
                 <div class="space-y-3">
                     
-                    <!-- Doctor Greeting Message Card (Image 2) -->
-                    <div class="p-4 rounded-2xl bg-[#1e1338]/80 border-l-4 border-pink-500 border-y border-r border-white/10 shadow-lg space-y-2">
+                    <!-- Doctor Greeting Message Card (Image 2 + Interactive Quick Start) -->
+                    <div class="p-4 rounded-2xl bg-[#1e1338]/85 border-l-4 border-pink-500 border-y border-r border-white/10 shadow-lg space-y-3">
                         <div class="flex items-start gap-3">
                             <span class="text-2xl p-1 bg-amber-500/20 rounded-xl">🤖</span>
                             <div class="text-xs leading-relaxed text-slate-200 space-y-1">
@@ -602,25 +667,390 @@
                                 </p>
                             </div>
                         </div>
+
+                        <!-- ⚡ Interactive Quick Start Chips -->
+                        <div class="pt-2 border-t border-white/10 space-y-1.5">
+                            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 flex items-center gap-1">
+                                <span>⚡ Tap to start instant consultation:</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button @click="sendDirectQuestion('Doctor saab, mujhe 2 din se mild bukhar aur gale me sardi hai')"
+                                        class="px-3 py-1.5 rounded-xl bg-pink-500/15 border border-pink-400/40 text-pink-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+                                    <span>🤒</span>
+                                    <span>Bukhar & Sardi</span>
+                                </button>
+                                <button @click="sendDirectQuestion('Mujhe tez sar dard (headache) aur heaviness hai')"
+                                        class="px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-400/40 text-cyan-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+                                    <span>🤕</span>
+                                    <span>Tez Sar Dard</span>
+                                </button>
+                                <button @click="sendDirectQuestion('Pet me gas, acidity aur jalan ho rahi hai')"
+                                        class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+                                    <span>🤢</span>
+                                    <span>Pet Dard & Gas</span>
+                                </button>
+                                <button @click="openLabModal()"
+                                        class="px-3 py-1.5 rounded-xl bg-cyan-500/20 border border-cyan-400/50 text-cyan-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition active:scale-95 shadow-sm hover:border-cyan-300">
+                                    <span>🔬</span>
+                                    <span>Lab Report Decoder</span>
+                                </button>
+                                <button @click="openInteractionModal()"
+                                        class="px-3 py-1.5 rounded-xl bg-rose-500/20 border border-rose-400/50 text-rose-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition active:scale-95 shadow-sm hover:border-rose-300">
+                                    <span>🛡️</span>
+                                    <span>Drug Conflict Shield</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Dynamic Chat Messages -->
+                    <!-- Dynamic Chat Messages with Medical Triage & Interactive Quick Options -->
                     <template x-for="(msg, index) in messages" :key="index">
                         <div class="flex gap-3" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
-                            <div class="max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2 shadow-md"
-                                 :class="msg.role === 'user' ? 'bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-br-none border border-teal-400/30' : 'bg-[#151c38]/90 border-l-4 border-brand-cyan border-y border-r border-white/10 text-slate-200 rounded-tl-none'">
-                                <div class="prose prose-invert max-w-none text-xs leading-relaxed" x-html="renderMarkdown(msg.content)"></div>
+                            <div class="max-w-[88%] sm:max-w-[85%] rounded-2xl p-3.5 sm:p-4 text-xs leading-relaxed space-y-2.5 shadow-md"
+                                 :class="msg.role === 'user' ? 'bg-gradient-to-r from-medical-600 to-teal-600 text-white rounded-br-none border border-teal-400/30' : 'bg-[#141b38]/95 border-l-4 border-brand-cyan border-y border-r border-white/10 text-slate-200 rounded-tl-none'">
                                 
+                                <!-- Assistant Message Header: Doctor Badge & Triage Level -->
+                                <div x-show="msg.role !== 'user'" class="flex items-center justify-between pb-1.5 border-b border-white/10 gap-2 flex-wrap">
+                                    <span class="flex items-center gap-1.5 font-bold text-brand-cyan text-[11px]">
+                                        <span>👨‍⚕️</span>
+                                        <span x-text="activeDoctorName"></span>
+                                    </span>
+                                    
+                                    <!-- Clinical Triage Badges -->
+                                    <template x-if="getTriageLevel(msg.content) === 'EMERGENCY'">
+                                        <span class="px-2 py-0.5 rounded-full bg-red-600/30 border border-red-500 text-red-300 font-black text-[10px] animate-pulse flex items-center gap-1">
+                                            <span>🚨</span> EMERGENCY
+                                        </span>
+                                    </template>
+                                    <template x-if="getTriageLevel(msg.content) === 'MODERATE'">
+                                        <span class="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 font-bold text-[10px] flex items-center gap-1">
+                                            <span>🟡</span> MODERATE CARE
+                                        </span>
+                                    </template>
+                                    <template x-if="getTriageLevel(msg.content) === 'MILD'">
+                                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold text-[10px] flex items-center gap-1">
+                                            <span>🟢</span> MILD CARE
+                                        </span>
+                                    </template>
+                                </div>
+
+                                <!-- Emergency Banner (If Triage is Emergency) -->
+                                <div x-show="msg.role !== 'user' && getTriageLevel(msg.content) === 'EMERGENCY'"
+                                     class="p-2.5 rounded-xl bg-red-950/80 border border-red-500 text-xs text-red-200 flex items-center justify-between gap-2 shadow-lg">
+                                    <span class="flex items-center gap-1 font-bold">
+                                        <span>🚨</span>
+                                        <span>Critical Red Flag! Immediate Attention Required</span>
+                                    </span>
+                                    <a href="tel:108" class="px-3 py-1 rounded-lg bg-red-600 hover:bg-red-500 text-white font-black flex items-center gap-1 text-[11px] transition shadow-md shrink-0">
+                                        <span>📞 Call 108</span>
+                                    </a>
+                                </div>
+
+                                <!-- 🛡️ Feature 4: Safety Guardrail Alert Banner -->
+                                <div x-show="msg.role !== 'user' && getSafetyAlert(msg.content)"
+                                     class="p-2.5 rounded-xl bg-amber-950/70 border-l-4 border-amber-400 border-y border-r border-white/10 text-xs text-amber-200 flex items-start gap-2.5 shadow-md">
+                                    <span class="text-base">🛡️</span>
+                                    <div class="space-y-0.5">
+                                        <span class="font-extrabold text-amber-300 block text-[11px] uppercase tracking-wide" x-text="getSafetyAlert(msg.content)?.title"></span>
+                                        <p class="text-[11px] text-amber-100/90 leading-tight" x-text="getSafetyAlert(msg.content)?.desc"></p>
+                                    </div>
+                                </div>
+
+                                <!-- Message Body (Cleaned of raw brackets) -->
+                                <div class="prose prose-invert max-w-none text-xs leading-relaxed" x-html="cleanMarkdown(msg.content)"></div>
+                                
+                                <!-- 🇮🇳 Feature 3: Pradhan Mantri Jan Aushadhi Generic Savings Card -->
+                                <div x-show="msg.role !== 'user' && getJanAushadhi(msg.content)"
+                                     class="p-3 rounded-2xl bg-gradient-to-r from-emerald-950/80 via-[#0a241e]/90 to-teal-950/80 border border-emerald-400/40 text-xs space-y-2.5 shadow-xl">
+                                    
+                                    <!-- Header with Jan Aushadhi Seal -->
+                                    <div class="flex items-center justify-between pb-1.5 border-b border-emerald-400/20">
+                                        <div class="flex items-center gap-1.5 text-[11px] font-bold text-emerald-300">
+                                            <span>🇮🇳</span>
+                                            <span>PM Jan Aushadhi Generic Salt Match</span>
+                                        </div>
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/30 text-emerald-300 border border-emerald-400/50"
+                                              x-text="'Save ' + (getJanAushadhi(msg.content)?.savings || '70%+')">
+                                        </span>
+                                    </div>
+
+                                    <!-- Active Salt Molecule Highlight -->
+                                    <div class="space-y-0.5">
+                                        <span class="text-[10px] text-slate-300 uppercase tracking-wide">Generic Molecule (Salt):</span>
+                                        <div class="text-xs sm:text-sm font-extrabold text-cyan-200 flex items-center gap-1.5">
+                                            <span>💊</span>
+                                            <span x-text="getJanAushadhi(msg.content)?.genericSalt"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Price Comparison Box -->
+                                    <div class="grid grid-cols-2 gap-2 text-center">
+                                        <!-- Branded MRP -->
+                                        <div class="p-2 rounded-xl bg-black/40 border border-rose-500/20">
+                                            <span class="text-[10px] text-slate-400 block" x-text="'Branded: ' + (getJanAushadhi(msg.content)?.branded || 'Brand')"></span>
+                                            <span class="text-xs line-through text-rose-400 font-bold" x-text="getJanAushadhi(msg.content)?.brandedPrice"></span>
+                                        </div>
+                                        <!-- Jan Aushadhi Price -->
+                                        <div class="p-2 rounded-xl bg-emerald-500/20 border border-emerald-400/60 shadow-inner">
+                                            <span class="text-[10px] text-emerald-300 font-bold block">Jan Aushadhi Kendra:</span>
+                                            <span class="text-sm font-black text-emerald-300" x-text="getJanAushadhi(msg.content)?.janAushadhiPrice"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Assurance Footer -->
+                                    <div class="text-[10px] text-slate-400 flex items-center justify-between pt-0.5">
+                                        <span class="flex items-center gap-1 text-emerald-300">
+                                            <span>✓</span>
+                                            <span>WHO-GMP Bioequivalent Salt</span>
+                                        </span>
+                                        <span class="text-[9px] text-cyan-300">Same formula • 100% Safe</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- 🛡️ Feature 2: Food-Drug & Drug-Drug Interaction Shield Card -->
+                                <div x-show="msg.role !== 'user' && getDrugInteraction(msg.content)"
+                                     :class="getInteractionClass(getDrugInteraction(msg.content)?.severity)"
+                                     class="p-3.5 rounded-2xl border text-xs space-y-2.5 shadow-2xl transition">
+                                    
+                                    <!-- Card Header with Category Badge -->
+                                    <div class="flex items-center justify-between pb-1.5 border-b border-white/10">
+                                        <div class="flex items-center gap-1.5 text-[11px] font-black">
+                                            <span class="text-base">🛡️</span>
+                                            <span>DRUG & FOOD INTERACTION SHIELD</span>
+                                        </div>
+                                        <span :class="getInteractionBadgeClass(getDrugInteraction(msg.content)?.severity)"
+                                              class="px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wide border shadow-sm"
+                                              x-text="getInteractionBadge(getDrugInteraction(msg.content)?.severity)">
+                                        </span>
+                                    </div>
+
+                                    <!-- Collision Box: Item A ⚡ Item B -->
+                                    <div class="p-2.5 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-2 text-center">
+                                        <div class="flex-1 font-bold text-slate-100 text-[11px] sm:text-xs">
+                                            <span class="text-rose-400 block text-[9px] uppercase font-semibold">Analyzed Clash:</span>
+                                            <span x-text="getDrugInteraction(msg.content)?.items"></span>
+                                        </div>
+                                        <div class="w-8 h-8 rounded-full bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-sm shrink-0 font-bold animate-pulse">
+                                            ⚡
+                                        </div>
+                                    </div>
+
+                                    <!-- Clinical Risk Alert Banner -->
+                                    <div class="p-2 rounded-xl bg-white/5 border border-white/10 space-y-1">
+                                        <div class="flex items-center gap-1.5 font-bold text-rose-300 text-[11px]">
+                                            <span>⚠️ Clinical Risk:</span>
+                                            <span class="font-extrabold text-white" x-text="getDrugInteraction(msg.content)?.risk"></span>
+                                        </div>
+                                        <p class="text-[10px] text-slate-300 leading-relaxed" x-text="getDrugInteraction(msg.content)?.mechanism"></p>
+                                    </div>
+
+                                    <!-- Golden Doctor Rule (Highlight Action Box) -->
+                                    <div class="p-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 border border-amber-400/50 space-y-0.5 shadow-inner">
+                                        <span class="text-[9px] uppercase font-black text-amber-300 tracking-wider flex items-center gap-1">
+                                            <span>👨‍⚕️ Golden Clinical Rule (स्वर्ण नियम):</span>
+                                        </span>
+                                        <p class="text-[11px] font-bold text-amber-100 leading-snug" x-text="getDrugInteraction(msg.content)?.rule"></p>
+                                    </div>
+                                </div>
+                                
+                                <!-- 🧪 Feature 6: In-Chat Smart Lab Report Interpreter Card -->
+                                <div x-show="msg.role !== 'user' && getLabReports(msg.content).length > 0"
+                                     class="p-3.5 rounded-2xl bg-gradient-to-br from-[#0b1736] via-[#0f214a] to-[#0a1836] border border-cyan-400/40 text-xs space-y-3 shadow-xl">
+                                    
+                                    <!-- Header with Pathology Seal -->
+                                    <div class="flex items-center justify-between pb-2 border-b border-cyan-400/20">
+                                        <div class="flex items-center gap-1.5 text-[11px] font-black text-cyan-300">
+                                            <span class="text-sm">🔬</span>
+                                            <span>SMART LAB REPORT INTERPRETER</span>
+                                        </div>
+                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
+                                            Diagnostic Pathology Ref.
+                                        </span>
+                                    </div>
+
+                                    <!-- Loop through each lab test in report -->
+                                    <template x-for="(lab, lIdx) in getLabReports(msg.content)" :key="lIdx">
+                                        <div class="p-2.5 rounded-xl bg-black/40 border border-white/10 space-y-2">
+                                            
+                                            <!-- Test Title & Status Badge -->
+                                            <div class="flex items-center justify-between gap-2">
+                                                <span class="font-extrabold text-white text-xs sm:text-sm flex items-center gap-1.5 truncate">
+                                                    <span class="text-cyan-400">🧪</span>
+                                                    <span x-text="lab.testName"></span>
+                                                </span>
+                                                <span :class="getLabBadgeClass(lab.status)"
+                                                      class="px-2 py-0.5 rounded-full text-[10px] font-black border flex items-center gap-1 shrink-0"
+                                                      x-text="getLabBadgeText(lab.status)">
+                                                </span>
+                                            </div>
+
+                                            <!-- Numbers Comparison Grid -->
+                                            <div class="grid grid-cols-2 gap-2 text-center pt-1">
+                                                <div class="p-2 rounded-lg bg-white/5 border border-white/10">
+                                                    <span class="text-[9px] text-slate-400 uppercase tracking-wider block">Your Reported Value</span>
+                                                    <span class="text-sm sm:text-base font-black text-cyan-200" x-text="lab.patientValue"></span>
+                                                </div>
+                                                <div class="p-2 rounded-lg bg-white/5 border border-white/10">
+                                                    <span class="text-[9px] text-slate-400 uppercase tracking-wider block">Normal Clinical Range</span>
+                                                    <span class="text-xs sm:text-sm font-bold text-slate-300" x-text="lab.referenceRange"></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Visual Range Scale Indicator Bar -->
+                                            <div class="space-y-1 pt-1">
+                                                <div class="flex justify-between text-[9px] font-semibold text-slate-400 px-1">
+                                                    <span class="text-sky-300">Low</span>
+                                                    <span class="text-emerald-400">Normal</span>
+                                                    <span class="text-amber-400">Borderline</span>
+                                                    <span class="text-rose-400">High / Critical</span>
+                                                </div>
+                                                <!-- Continuous gradient spectrum bar -->
+                                                <div class="relative h-2 w-full rounded-full bg-gradient-to-r from-sky-500 via-emerald-500 via-amber-400 to-rose-600 p-[1px]">
+                                                    <!-- Pin indicator pointing to status position -->
+                                                    <div class="absolute -top-1 w-3 h-4 bg-white border-2 border-slate-900 rounded-full shadow transform -translate-x-1/2 transition-all duration-500"
+                                                         :style="'left: ' + getLabBarPercent(lab.status) + '%;'"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Clinical Explanation -->
+                                            <div class="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/20 text-[11px] text-cyan-100 flex items-start gap-1.5">
+                                                <span class="text-xs">💡</span>
+                                                <p class="leading-snug" x-text="lab.clinicalSummary"></p>
+                                            </div>
+
+                                            <!-- Doctor Action Advised -->
+                                            <div class="text-[10px] text-emerald-300/90 font-semibold flex items-center gap-1 px-1">
+                                                <span>👨‍⚕️ Clinical Step:</span>
+                                                <span class="text-slate-200 font-normal" x-text="lab.recommendedAction"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                                
+                                <!-- 🚨 Feature 8: 24-48 Hr Red-Flag Monitoring Alert Card -->
+                                <template x-if="msg.role !== 'user' && getRedFlagMonitor(msg.content)">
+                                    <div class="mt-3 rounded-2xl border-l-4 border-red-500 bg-gradient-to-br from-[#1a0606]/95 via-[#200c0c]/95 to-[#1f0808]/95 border border-red-600/40 p-4 shadow-lg shadow-red-900/30">
+                                        <!-- Pulsing Header -->
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="relative flex h-3 w-3">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                            </span>
+                                            <span class="text-[11px] font-black uppercase tracking-widest text-red-400">⚠️ 24-48 HR MONITORING ALERT</span>
+                                            <span class="ml-auto text-[9px] text-red-400/70 font-semibold border border-red-500/40 rounded-full px-2 py-0.5">WATCH FOR THESE SIGNS</span>
+                                        </div>
+                                        <p class="text-[10px] text-red-300/80 mb-3 leading-relaxed">Yeh symptoms kisi bhi waqt dikhein — <strong class="text-red-300">turant Emergency jayein</strong>. Intezaar mat karein.</p>
+                                        <!-- Danger Signs Checklist -->
+                                        <div class="space-y-2 mb-4">
+                                            <template x-for="(sign, sIdx) in getRedFlagMonitor(msg.content).signs" :key="sIdx">
+                                                <div class="flex items-start gap-2.5 bg-red-950/60 rounded-xl px-3 py-2.5 border border-red-700/30 hover:border-red-500/50 transition-colors group">
+                                                    <div class="flex-shrink-0 w-5 h-5 rounded-md border-2 border-red-500/70 flex items-center justify-center mt-0.5 group-hover:border-red-400 transition-colors">
+                                                        <span class="text-[9px] text-red-400 font-black" x-text="sIdx + 1"></span>
+                                                    </div>
+                                                    <p class="text-[11px] text-red-200 leading-snug font-medium" x-text="sign"></p>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <!-- Emergency CTA -->
+                                        <div class="flex gap-2">
+                                            <a href="tel:108" class="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 active:scale-95 text-white font-black text-[13px] rounded-xl py-3 shadow-lg shadow-red-900/50 transition-all">
+                                                <span class="text-lg">📞</span>
+                                                <span>Call 108 Emergency</span>
+                                            </a>
+                                            <a href="tel:112" class="flex items-center justify-center gap-1.5 bg-red-950/80 hover:bg-red-900/80 border border-red-600/50 text-red-300 font-bold text-[11px] rounded-xl px-3 py-3 transition-all">
+                                                <span>🚑</span>
+                                                <span>112</span>
+                                            </a>
+                                        </div>
+                                        <p class="text-[9px] text-red-400/60 text-center mt-2" x-text="getRedFlagMonitor(msg.content).emergencyAction"></p>
+                                    </div>
+                                </template>
+
+                                <!-- 📋 Feature 9: "Ask My Doctor" OPD Question Generator Card -->
+                                <template x-if="msg.role !== 'user' && getOpdQuestions(msg.content).length > 0">
+                                    <div class="mt-3 rounded-2xl bg-gradient-to-br from-[#0d1a2e]/95 via-[#0f1f38]/95 to-[#0b1830]/95 border border-blue-500/30 p-4 shadow-lg shadow-blue-900/20">
+                                        <!-- Header -->
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-sm flex-shrink-0">
+                                                <span class="text-sm">📋</span>
+                                            </div>
+                                            <div>
+                                                <p class="text-[11px] font-black uppercase tracking-widest text-blue-300">Smart OPD Prep</p>
+                                                <p class="text-[9px] text-blue-400/70 font-medium">Apne Doctor se yeh zaroor poochein</p>
+                                            </div>
+                                            <div class="ml-auto">
+                                                <span class="text-[9px] bg-blue-500/20 text-blue-300 border border-blue-500/40 rounded-full px-2 py-0.5 font-bold" x-text="getOpdQuestions(msg.content).length + ' Questions'"></span>
+                                            </div>
+                                        </div>
+                                        <!-- Questions List -->
+                                        <div class="space-y-2 mb-3">
+                                            <template x-for="(q, qIdx) in getOpdQuestions(msg.content)" :key="qIdx">
+                                                <div class="flex items-start gap-2.5 bg-blue-950/50 rounded-xl px-3 py-2.5 border border-blue-700/20 hover:border-blue-500/40 transition-colors group">
+                                                    <div class="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center mt-0.5 shadow-sm">
+                                                        <span class="text-[9px] text-white font-black" x-text="'Q' + (qIdx + 1)"></span>
+                                                    </div>
+                                                    <p class="text-[11px] text-blue-100 leading-snug flex-1" x-text="q"></p>
+                                                    <button @click="navigator.clipboard && navigator.clipboard.writeText(q)"
+                                                            class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-blue-500/20 text-blue-400 hover:text-blue-200" title="Copy question">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                                    </button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <!-- Action buttons -->
+                                        <div class="flex gap-2">
+                                            <button @click="navigator.clipboard && navigator.clipboard.writeText(getOpdQuestions(msg.content).map((q,i) => (i+1)+'. '+q).join('\n'))"
+                                                    class="flex-1 flex items-center justify-center gap-1.5 bg-blue-600/80 hover:bg-blue-500/80 active:scale-95 text-white font-bold text-[11px] rounded-xl py-2.5 transition-all border border-blue-400/30">
+                                                <span>📋</span>
+                                                <span>Copy All Questions</span>
+                                            </button>
+                                            <button @click="sendDirectQuestion('Doctor se OPD mein kya poochein aur kya tests karwaane chahiye?')"
+                                                    class="flex items-center justify-center gap-1 bg-indigo-600/60 hover:bg-indigo-500/60 border border-indigo-400/30 text-indigo-200 font-bold text-[11px] rounded-xl px-3 py-2.5 transition-all">
+                                                <span>💬</span>
+                                                <span>Ask More</span>
+                                            </button>
+                                        </div>
+                                        <p class="text-[9px] text-blue-400/50 text-center mt-2">💡 Yeh questions screenshot karein aur OPD mein doctor ko dikhayein</p>
+                                    </div>
+                                </template>
+
+                                <!-- ⚡ Feature 1: Interactive Diagnostic Quick-Tap Follow-Up Chips -->
+                                <div x-show="msg.role !== 'user' && getQuickOptions(msg.content).length > 0" class="pt-2 border-t border-white/10 space-y-1.5">                                    <div class="text-[10px] uppercase font-bold tracking-wider text-cyan-300 flex items-center gap-1">
+                                        <span>👉 Tap to answer:</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <template x-for="chip in getQuickOptions(msg.content)" :key="chip">
+                                            <button @click="sendDirectQuestion(chip)"
+                                                    class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-teal-500/20 via-cyan-500/25 to-blue-500/20 border border-cyan-400/50 hover:border-cyan-300 text-cyan-100 hover:text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:scale-[1.02] active:scale-95 transition">
+                                                <span class="text-xs">⚡</span>
+                                                <span x-text="chip"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+
                                 <!-- Action Buttons on Doctor Replies -->
-                                <div x-show="msg.role !== 'user'" class="flex items-center justify-between pt-2 border-t border-white/10 text-[11px]">
-                                    <button @click="speakText(msg.content)" class="text-brand-cyan hover:underline flex items-center gap-1 font-semibold">
-                                        <span>🔊</span>
-                                        <span>Read Aloud</span>
-                                    </button>
-                                    <button @click="downloadPrescription(msg.content)" class="px-3 py-1 rounded-lg bg-brand-cyan text-slate-900 font-bold hover:bg-cyan-300 transition flex items-center gap-1">
-                                        <span>📄</span>
-                                        <span>Download Rx (PDF)</span>
-                                    </button>
+                                <div x-show="msg.role !== 'user'" class="flex items-center justify-between pt-2 border-t border-white/10 text-[11px] gap-2 flex-wrap">
+                                    <div class="flex items-center gap-3">
+                                        <button @click="speakText(msg.content)" class="text-brand-cyan hover:underline flex items-center gap-1 font-semibold">
+                                            <span>🔊</span>
+                                            <span>Read Aloud</span>
+                                        </button>
+                                        <button @click="copyAdvice(msg.content, index)" class="text-slate-300 hover:text-white flex items-center gap-1 font-semibold">
+                                            <span>📋</span>
+                                            <span x-text="copiedIndex === index ? 'Copied! ✓' : 'Copy'"></span>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button @click="downloadPrescription(msg.content)" class="px-2.5 py-1 rounded-lg bg-brand-cyan text-slate-900 font-bold hover:bg-cyan-300 transition flex items-center gap-1 shadow-sm active:scale-95">
+                                            <span>📄</span>
+                                            <span>Download Rx</span>
+                                        </button>
+                                        <button @click="downloadClinicSummary(msg.content)" class="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/40 border border-purple-400/60 text-purple-200 hover:text-white font-bold transition flex items-center gap-1 shadow-sm active:scale-95" title="Download 1-page clinical brief for your consulting doctor">
+                                            <span>🏥</span>
+                                            <span>Clinic Pass</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -628,8 +1058,13 @@
 
                     <!-- Streaming Text Live Display -->
                     <div x-show="isStreaming" class="flex justify-start">
-                        <div class="max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed bg-[#151c38]/90 border-l-4 border-brand-cyan border-y border-r border-white/10 text-slate-200 shadow-md">
-                            <div class="prose prose-invert max-w-none text-xs leading-relaxed" x-html="renderMarkdown(currentStreamChunk)"></div>
+                        <div class="max-w-[88%] sm:max-w-[85%] rounded-2xl p-3.5 sm:p-4 text-xs leading-relaxed bg-[#141b38]/95 border-l-4 border-brand-cyan border-y border-r border-white/10 text-slate-200 shadow-md">
+                            <div class="flex items-center gap-1.5 font-bold text-brand-cyan text-[11px] pb-1.5 border-b border-white/10 mb-2">
+                                <span>👨‍⚕️</span>
+                                <span x-text="activeDoctorName"></span>
+                                <span class="text-[10px] text-emerald-400 font-normal animate-pulse">• Typing...</span>
+                            </div>
+                            <div class="prose prose-invert max-w-none text-xs leading-relaxed" x-html="cleanMarkdown(currentStreamChunk)"></div>
                             <span class="inline-block w-2 h-4 bg-brand-cyan animate-pulse"></span>
                         </div>
                     </div>
@@ -691,7 +1126,105 @@
                 </div>
 
                 <!-- Sticky Bottom Chat Input Area (Native Mobile Dock) -->
-                <div class="sticky bottom-0 z-20 backdrop-blur-2xl bg-[#090f24]/95 border-t border-white/10 p-2 sm:p-3 -mx-2.5 sm:-mx-5 md:-mx-8 shadow-2xl">
+                <div class="sticky bottom-[52px] lg:bottom-0 z-20 backdrop-blur-2xl bg-[#090f24]/95 border-t border-white/10 p-2 sm:p-3 -mx-2 sm:-mx-4 md:-mx-6 lg:-mx-8 shadow-2xl">
+                    
+                    <!-- Quick Pathology Lab Report Helper Popover Drawer -->
+                    <div x-show="labModalOpen"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-2 scale-98"
+                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave-end="opacity-0 translate-y-2 scale-98"
+                         class="mb-2 p-3 rounded-2xl bg-gradient-to-br from-[#0c1938] via-[#0f2452] to-[#091530] border border-cyan-400/50 shadow-2xl text-xs space-y-2">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-1.5 gap-2">
+                            <!-- Helper Drawer Tabs -->
+                            <div class="flex items-center gap-1">
+                                <button @click="helperDrawerTab = 'lab'"
+                                        :class="helperDrawerTab === 'lab' ? 'bg-cyan-500/30 text-cyan-200 border-cyan-400 font-bold' : 'text-slate-400 border-transparent hover:text-slate-200'"
+                                        class="px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-1 transition">
+                                    <span>🔬</span>
+                                    <span>Lab Tests</span>
+                                </button>
+                                <button @click="helperDrawerTab = 'interaction'"
+                                        :class="helperDrawerTab === 'interaction' ? 'bg-rose-500/30 text-rose-200 border-rose-400 font-bold' : 'text-slate-400 border-transparent hover:text-slate-200'"
+                                        class="px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-1 transition">
+                                    <span>🛡️</span>
+                                    <span>Drug Conflicts</span>
+                                </button>
+                            </div>
+                            <button @click="labModalOpen = false" class="text-slate-400 hover:text-white text-xs font-bold px-1.5 py-0.5 rounded-lg hover:bg-white/10">✕</button>
+                        </div>
+
+                        <!-- TAB 1: LAB REPORT PRESETS -->
+                        <div x-show="helperDrawerTab === 'lab'" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                            <button @click="fillLabTemplate('HbA1c & Fasting Sugar', 'Doctor saab, mera Fasting Blood Sugar 145 mg/dL aur HbA1c 7.6% aaya hai. Please analyze my diabetic report.')"
+                                    class="p-2 rounded-xl bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-left transition group active:scale-95">
+                                <span class="text-cyan-300 font-bold block text-[11px] group-hover:text-cyan-200">🩸 HbA1c & Sugar</span>
+                                <span class="text-[9px] text-slate-400 block truncate">145 mg/dL & 7.6%</span>
+                            </button>
+                            <button @click="fillLabTemplate('CBC & Platelets', 'Doctor saab, mera CBC me Platelet count 95,000 /mcL aur Hemoglobin 10.8 g/dL aaya hai. Dengue/viral risk interpret karein.')"
+                                    class="p-2 rounded-xl bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-left transition group active:scale-95">
+                                <span class="text-cyan-300 font-bold block text-[11px] group-hover:text-cyan-200">🩸 CBC & Platelets</span>
+                                <span class="text-[9px] text-slate-400 block truncate">95k /mcL & 10.8 g/dL</span>
+                            </button>
+                            <button @click="fillLabTemplate('Thyroid TSH', 'Doctor saab, mera Serum TSH level 6.8 uIU/mL aaya hai. Hypothyroidism report check karein.')"
+                                    class="p-2 rounded-xl bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-left transition group active:scale-95">
+                                <span class="text-cyan-300 font-bold block text-[11px] group-hover:text-cyan-200">🦋 Thyroid (TSH)</span>
+                                <span class="text-[9px] text-slate-400 block truncate">6.8 uIU/mL</span>
+                            </button>
+                            <button @click="fillLabTemplate('Lipid Profile', 'Doctor saab, mera Total Cholesterol 240 mg/dL aur Triglycerides 215 mg/dL aaya hai. Heart risk check karein.')"
+                                    class="p-2 rounded-xl bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-left transition group active:scale-95">
+                                <span class="text-cyan-300 font-bold block text-[11px] group-hover:text-cyan-200">🫀 Lipid Profile</span>
+                                <span class="text-[9px] text-slate-400 block truncate">Cholesterol & Triglycerides</span>
+                            </button>
+                            <button @click="fillLabTemplate('Kidney KFT', 'Doctor saab, mera Serum Creatinine 1.5 mg/dL aur Uric acid 7.8 mg/dL aaya hai. Kidney report check karein.')"
+                                    class="p-2 rounded-xl bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-left transition group active:scale-95">
+                                <span class="text-cyan-300 font-bold block text-[11px] group-hover:text-cyan-200">🫘 Kidney / KFT</span>
+                                <span class="text-[9px] text-slate-400 block truncate">Creatinine 1.5 mg/dL</span>
+                            </button>
+                            <button @click="fillLabTemplate('Vitamin D3 & B12', 'Doctor saab, mera Vitamin D3 level 14 ng/mL aur Vitamin B12 165 pg/mL aaya hai. Supplements & diet batayein.')"
+                                    class="p-2 rounded-xl bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-left transition group active:scale-95">
+                                <span class="text-cyan-300 font-bold block text-[11px] group-hover:text-cyan-200">☀️ Vit D3 & B12</span>
+                                <span class="text-[9px] text-slate-400 block truncate">D3 14 ng/mL, B12 165</span>
+                            </button>
+                        </div>
+
+                        <!-- TAB 2: DRUG & FOOD INTERACTION PRESETS -->
+                        <div x-show="helperDrawerTab === 'interaction'" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                            <button @click="fillLabTemplate('Dolo + Sinarest Clash', 'Doctor saab, kya main Dolo 650 aur Sinarest tablet ek sath le sakta hoon bukhar aur sardi ke liye? Safe hai kya?')"
+                                    class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/25 border border-rose-500/30 hover:border-rose-400/60 text-left transition group active:scale-95">
+                                <span class="text-rose-300 font-bold block text-[11px] group-hover:text-rose-200">⚡ Dolo + Sinarest</span>
+                                <span class="text-[9px] text-slate-300 block truncate">Paracetamol Overdose?</span>
+                            </button>
+                            <button @click="fillLabTemplate('Thyronorm + Tea/Milk', 'Doctor saab, kya Thyroid ki goli (Thyronorm) subah chai ya doodh ke sath le sakte hain? Kitna gap chahiye?')"
+                                    class="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/25 border border-amber-500/30 hover:border-amber-400/60 text-left transition group active:scale-95">
+                                <span class="text-amber-300 font-bold block text-[11px] group-hover:text-amber-200">☕ Thyroxine + Chai/Milk</span>
+                                <span class="text-[9px] text-slate-300 block truncate">Absorption Blocker?</span>
+                            </button>
+                            <button @click="fillLabTemplate('Iron Tonic + Chai/Coffee', 'Doctor saab, Iron tonic/syrup lene ke kitni der baad chai ya coffee peeni chahiye? Absorption affect hogi?')"
+                                    class="p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/30 hover:border-emerald-400/60 text-left transition group active:scale-95">
+                                <span class="text-emerald-300 font-bold block text-[11px] group-hover:text-emerald-200">🍵 Iron + Chai / Coffee</span>
+                                <span class="text-[9px] text-slate-300 block truncate">Tannin Binding Rule</span>
+                            </button>
+                            <button @click="fillLabTemplate('Antibiotic + Milk / Curd', 'Doctor saab, kya Antibiotic medicine (Cipro / Doxycycline) dahi ya doodh ke sath lena safe hai?')"
+                                    class="p-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/25 border border-cyan-500/30 hover:border-cyan-400/60 text-left transition group active:scale-95">
+                                <span class="text-cyan-300 font-bold block text-[11px] group-hover:text-cyan-200">🥛 Antibiotic + Dairy</span>
+                                <span class="text-[9px] text-slate-300 block truncate">Calcium Chelation Check</span>
+                            </button>
+                            <button @click="fillLabTemplate('Combiflam + Acidity / Alcohol', 'Doctor saab, pet me gas aur acidity hai, kya Combiflam ya Brufen painkiller lena safe hai?')"
+                                    class="p-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/25 border border-purple-500/30 hover:border-purple-400/60 text-left transition group active:scale-95">
+                                <span class="text-purple-300 font-bold block text-[11px] group-hover:text-purple-200">🍺 Painkiller + Acidity</span>
+                                <span class="text-[9px] text-slate-300 block truncate">Gastric Ulcer / Bleeding Risk</span>
+                            </button>
+                            <button @click="fillLabTemplate('BP Meds + Painkillers', 'Doctor saab, High BP patient ko kamar dard ke liye konsi painkiller safe hai? Kya Brufen le sakte hain?')"
+                                    class="p-2 rounded-xl bg-sky-500/10 hover:bg-sky-500/25 border border-sky-500/30 hover:border-sky-400/60 text-left transition group active:scale-95">
+                                <span class="text-sky-300 font-bold block text-[11px] group-hover:text-sky-200">🫀 BP Pills + NSAIDs</span>
+                                <span class="text-[9px] text-slate-300 block truncate">BP Spike / Kidney Risk</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="flex items-center gap-1.5 sm:gap-2">
                         <!-- File Upload -->
                         <label class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-slate-300 cursor-pointer active:scale-90 transition shrink-0 flex items-center justify-center w-10 h-10 border border-white/10" title="Attach Medical Report / Image">
@@ -706,12 +1239,20 @@
                             <span class="text-base">🎤</span>
                         </button>
 
+                        <!-- Smart Lab Report Decoder Toggle Button -->
+                        <button @click="labModalOpen = !labModalOpen"
+                                :class="labModalOpen ? 'bg-cyan-500 text-slate-900 border-cyan-300 ring-2 ring-cyan-400' : 'bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 border-cyan-500/40'"
+                                class="p-2.5 rounded-2xl active:scale-90 transition shrink-0 flex items-center justify-center w-10 h-10 border shadow-sm"
+                                title="Smart Lab & Pathology Report Helper">
+                            <span class="text-base">🧪</span>
+                        </button>
+
                         <!-- Text Input Box -->
                         <input type="text"
                                x-model="userInput"
                                @keydown.enter="sendTextMessage()"
-                               :placeholder="'Ask ' + activeDoctorName + ' anything...'"
-                               class="flex-1 px-4 py-2.5 st-input text-xs sm:text-sm rounded-2xl">
+                               :placeholder="'Ask ' + activeDoctorName + ' anything or enter test values...'"
+                               class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 st-input text-base sm:text-xs md:text-sm rounded-2xl shadow-inner focus:ring-2 focus:ring-cyan-400/40">
 
                         <!-- Send Button (Vibrant Pink Gradient Pop) -->
                         <button @click="sendTextMessage()"
@@ -844,7 +1385,7 @@
         </main>
 
         <!-- 📱 Native Mobile Bottom App Navigation (Phone View) -->
-        <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#070c20]/95 backdrop-blur-2xl border-t border-white/10 px-3 py-1.5 flex items-center justify-around text-[10px] pb-safe shadow-2xl">
+        <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#070c20]/95 backdrop-blur-2xl border-t border-white/10 px-3 py-1 flex items-center justify-around text-[10px] pb-safe shadow-2xl h-[52px]">
             <button @click="serviceMode = 'consult'; window.scrollTo({top: 0, behavior: 'smooth'});"
                     :class="serviceMode === 'consult' ? 'text-brand-cyan font-bold scale-105' : 'text-slate-400 hover:text-slate-200'"
                     class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition active:scale-95">
@@ -874,6 +1415,30 @@
 
     <!-- Application Controller Logic -->
     <script>
+        // High-Performance LRU/Map Memoization Cache (Prevents Mobile Freezing, Lag & Battery Drain)
+        const _memoCache = {
+            clean: new Map(),
+            drug: new Map(),
+            triage: new Map(),
+            safety: new Map(),
+            jan: new Map(),
+            lab: new Map(),
+            quick: new Map(),
+            redFlag: new Map(),
+            opd: new Map(),
+            get(map, key, compute) {
+                if (!key) return null;
+                if (map.has(key)) return map.get(key);
+                const val = compute(key);
+                if (map.size > 200) {
+                    const first = map.keys().next().value;
+                    map.delete(first);
+                }
+                map.set(key, val);
+                return val;
+            }
+        };
+
         function sehaatOriginalApp() {
             return {
                 // Screen Gate: False shows Registration Form, True shows Full App
@@ -900,6 +1465,8 @@
                 selectedLanguage: 'English',
                 showPatientExpander: false,
                 autoSpeakEnabled: false,
+                labModalOpen: false,
+                helperDrawerTab: 'lab',
 
                 // Location Settings
                 statesList: [],
@@ -917,6 +1484,7 @@
                 currentStreamChunk: '',
                 attachedReportName: '',
                 attachedReportText: '',
+                copiedIndex: null,
 
                 // Voice Web Speech
                 speechRec: null,
@@ -1073,6 +1641,7 @@
                     this.isLoading = true;
                     this.isStreaming = true;
                     this.currentStreamChunk = '';
+                    this.scrollToBottom(true);
 
                     try {
                         const response = await fetch('/api/chat/stream', {
@@ -1093,6 +1662,18 @@
                         const reader = response.body.getReader();
                         const decoder = new TextDecoder();
                         let accumulated = '';
+                        let rafPending = false;
+
+                        const scheduleRafUpdate = () => {
+                            if (!rafPending) {
+                                rafPending = true;
+                                requestAnimationFrame(() => {
+                                    this.currentStreamChunk = accumulated;
+                                    this.scrollToBottom();
+                                    rafPending = false;
+                                });
+                            }
+                        };
 
                         while (true) {
                             const { done, value } = await reader.read();
@@ -1107,17 +1688,18 @@
                                         const parsed = JSON.parse(dataStr);
                                         if (parsed.chunk) {
                                             accumulated += parsed.chunk;
-                                            this.currentStreamChunk = accumulated;
+                                            scheduleRafUpdate();
                                         }
                                     } catch (e) {}
                                 }
                             }
                         }
 
-                        this.messages.push({ role: 'assistant', content: accumulated });
                         this.currentStreamChunk = '';
+                        this.messages.push({ role: 'assistant', content: accumulated });
                         this.isStreaming = false;
                         this.isLoading = false;
+                        this.scrollToBottom(true);
 
                         if (this.autoSpeakEnabled) {
                             this.speakText(accumulated);
@@ -1126,18 +1708,245 @@
                         this.isStreaming = false;
                         this.isLoading = false;
                         this.messages.push({ role: 'assistant', content: `⚠️ Consultation error: ${e.message}` });
+                        this.scrollToBottom(true);
                     }
                 },
 
+                scrollToBottom(smooth = false) {
+                    this.$nextTick(() => {
+                        const container = document.getElementById('chatMain') || document.querySelector('main');
+                        if (container) {
+                            container.scrollTo({
+                                top: container.scrollHeight + 400,
+                                behavior: smooth ? 'smooth' : 'auto'
+                            });
+                        }
+                    });
+                },
+
                 renderMarkdown(text) {
+                    return this.cleanMarkdown(text);
+                },
+
+                cleanMarkdown(text) {
                     if (!text) return '';
-                    return marked.parse(text);
+                    return _memoCache.get(_memoCache.clean, text, (raw) => {
+                        let cleaned = raw
+                            .replace(/(?:\*\*|`?)\s*\[TRIAGE:\s*(MILD|MODERATE|EMERGENCY)\]\s*(?:\*\*|`?)/gi, '')
+                            .replace(/(?:\*\*|`?)\s*\[SAFETY_GUARDRAIL:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                            .replace(/(?:\*\*|`?)\s*\[JAN_AUSHADHI:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                            .replace(/(?:\*\*|`?)\s*\[LAB_INTERPRETER:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                            .replace(/(?:\*\*|`?)\s*\[DRUG_INTERACTION:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                            .replace(/(?:\*\*|`?)\s*\[RED_FLAG_MONITOR:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                            .replace(/(?:\*\*|`?)\s*\[OPD_QUESTIONS:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                            .replace(/(?:\*\*|`?)\s*\[QUICK_OPTIONS:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                            .trim();
+                        return marked.parse(cleaned);
+                    });
+                },
+
+                getDrugInteraction(text) {
+                    if (!text) return null;
+                    return _memoCache.get(_memoCache.drug, text, (raw) => {
+                        const match = raw.match(/(?:\*\*|`?)\s*\[DRUG_INTERACTION:\s*(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\]\s*(?:\*\*|`?)/i);
+                        if (match && match[1]) {
+                            return {
+                                severity: match[1].trim().toUpperCase(),
+                                items: match[2].trim(),
+                                mechanism: match[3].trim(),
+                                risk: match[4].trim(),
+                                rule: match[5].trim()
+                            };
+                        }
+                        return null;
+                    });
+                },
+
+                getInteractionClass(severity) {
+                    const s = (severity || '').toUpperCase();
+                    if (s.includes('CRITICAL')) return 'bg-gradient-to-r from-red-950/95 via-[#2d0e0e]/95 to-rose-950/95 border-red-500/70 text-red-200';
+                    if (s.includes('MODERATE')) return 'bg-gradient-to-r from-amber-950/95 via-[#2e1c0b]/95 to-yellow-950/95 border-amber-500/70 text-amber-200';
+                    return 'bg-gradient-to-r from-emerald-950/95 via-[#0e2a20]/95 to-teal-950/95 border-emerald-500/70 text-emerald-200';
+                },
+
+                getInteractionBadge(severity) {
+                    const s = (severity || '').toUpperCase();
+                    if (s.includes('CRITICAL')) return '🚨 CRITICAL OVERDOSE / CONFLICT';
+                    if (s.includes('MODERATE')) return '⚠️ MODERATE INTERACTION';
+                    return '🥗 FOOD & BEVERAGE TIMING';
+                },
+
+                getInteractionBadgeClass(severity) {
+                    const s = (severity || '').toUpperCase();
+                    if (s.includes('CRITICAL')) return 'bg-rose-600/30 text-rose-300 border-rose-500 animate-pulse';
+                    if (s.includes('MODERATE')) return 'bg-amber-500/30 text-amber-300 border-amber-500';
+                    return 'bg-emerald-500/30 text-emerald-300 border-emerald-500';
+                },
+
+                getTriageLevel(text) {
+                    if (!text) return null;
+                    return _memoCache.get(_memoCache.triage, text, (raw) => {
+                        if (raw.includes('[TRIAGE: EMERGENCY]')) return 'EMERGENCY';
+                        if (raw.includes('[TRIAGE: MODERATE]')) return 'MODERATE';
+                        if (raw.includes('[TRIAGE: MILD]')) return 'MILD';
+                        return null;
+                    });
+                },
+
+                getSafetyAlert(text) {
+                    if (!text) return null;
+                    return _memoCache.get(_memoCache.safety, text, (raw) => {
+                        const match = raw.match(/(?:\*\*|`?)\s*\[SAFETY_GUARDRAIL:\s*(.*?)\|(.*?)\]\s*(?:\*\*|`?)/i);
+                        if (match && match[1]) {
+                            return {
+                                title: match[1].trim(),
+                                desc: match[2].trim()
+                            };
+                        }
+                        return null;
+                    });
+                },
+
+                getJanAushadhi(text) {
+                    if (!text) return null;
+                    return _memoCache.get(_memoCache.jan, text, (raw) => {
+                        const match = raw.match(/(?:\*\*|`?)\s*\[JAN_AUSHADHI:\s*(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\]\s*(?:\*\*|`?)/i);
+                        if (match && match[1]) {
+                            return {
+                                branded: match[1].trim(),
+                                genericSalt: match[2].trim(),
+                                brandedPrice: match[3].trim(),
+                                janAushadhiPrice: match[4].trim(),
+                                savings: match[5].trim()
+                            };
+                        }
+                        return null;
+                    });
+                },
+
+                getLabReports(text) {
+                    if (!text) return [];
+                    return _memoCache.get(_memoCache.lab, text, (raw) => {
+                        const regex = /(?:\*\*|`?)\s*\[LAB_INTERPRETER:\s*(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\]\s*(?:\*\*|`?)/gi;
+                        const results = [];
+                        let match;
+                        while ((match = regex.exec(raw)) !== null) {
+                            if (match[1]) {
+                                const statusUpper = (match[4] || 'NORMAL').trim().toUpperCase();
+                                results.push({
+                                    testName: match[1].trim(),
+                                    patientValue: match[2].trim(),
+                                    referenceRange: match[3].trim(),
+                                    status: statusUpper,
+                                    clinicalSummary: match[5].trim(),
+                                    recommendedAction: match[6].trim()
+                                });
+                            }
+                        }
+                        return results;
+                    }) || [];
+                },
+
+                getLabBadgeClass(status) {
+                    const s = (status || '').toUpperCase();
+                    if (s.includes('CRITICAL')) return 'bg-rose-600/30 text-rose-300 border-rose-500 animate-pulse';
+                    if (s.includes('HIGH')) return 'bg-orange-500/30 text-orange-300 border-orange-500';
+                    if (s.includes('BORDERLINE')) return 'bg-amber-500/30 text-amber-300 border-amber-500';
+                    if (s.includes('LOW')) return 'bg-sky-500/30 text-sky-300 border-sky-500';
+                    return 'bg-emerald-500/30 text-emerald-300 border-emerald-500';
+                },
+
+                getLabBadgeText(status) {
+                    const s = (status || '').toUpperCase();
+                    if (s.includes('CRITICAL')) return '🚨 Critical Value';
+                    if (s.includes('HIGH')) return '📈 High';
+                    if (s.includes('BORDERLINE')) return '⚠️ Borderline';
+                    if (s.includes('LOW')) return '📉 Low';
+                    return '✅ Normal Range';
+                },
+
+                getLabBarPercent(status) {
+                    const s = (status || '').toUpperCase();
+                    if (s.includes('LOW')) return 12;
+                    if (s.includes('NORMAL')) return 38;
+                    if (s.includes('BORDERLINE')) return 64;
+                    if (s.includes('CRITICAL')) return 94;
+                    if (s.includes('HIGH')) return 82;
+                    return 38;
+                },
+
+                getQuickOptions(text) {
+                    if (!text) return [];
+                    return _memoCache.get(_memoCache.quick, text, (raw) => {
+                        const match = raw.match(/(?:\*\*|`?)\s*\[QUICK_OPTIONS:\s*(.*?)\]\s*(?:\*\*|`?)/i);
+                        if (match && match[1]) {
+                            return match[1].split('|').map(s => s.trim()).filter(s => s.length > 0);
+                        }
+                        return [];
+                    }) || [];
+                },
+
+                getRedFlagMonitor(text) {
+                    if (!text) return null;
+                    return _memoCache.get(_memoCache.redFlag, text, (raw) => {
+                        const match = raw.match(/(?:\*\*|`?)\s*\[RED_FLAG_MONITOR:\s*(.*?)\]\s*(?:\*\*|`?)/i);
+                        if (match && match[1]) {
+                            const parts = match[1].split('|').map(s => s.trim()).filter(s => s.length > 0);
+                            if (parts.length >= 2) {
+                                return {
+                                    signs: parts.slice(0, parts.length - 1),
+                                    emergencyAction: parts[parts.length - 1]
+                                };
+                            }
+                        }
+                        return null;
+                    });
+                },
+
+                getOpdQuestions(text) {
+                    if (!text) return [];
+                    return _memoCache.get(_memoCache.opd, text, (raw) => {
+                        const match = raw.match(/(?:\*\*|`?)\s*\[OPD_QUESTIONS:\s*(.*?)\]\s*(?:\*\*|`?)/i);
+                        if (match && match[1]) {
+                            return match[1].split('|').map(s => s.trim()).filter(s => s.length > 0);
+                        }
+                        return [];
+                    }) || [];
+                },
+
+                copyAdvice(text, index) {
+                    if (!text) return;
+                    let cleanText = text
+                        .replace(/(?:\*\*|`?)\s*\[TRIAGE:\s*(MILD|MODERATE|EMERGENCY)\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[SAFETY_GUARDRAIL:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[JAN_AUSHADHI:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[LAB_INTERPRETER:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[DRUG_INTERACTION:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[RED_FLAG_MONITOR:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[OPD_QUESTIONS:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[QUICK_OPTIONS:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .trim();
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(cleanText);
+                    }
+                    this.copiedIndex = index;
+                    setTimeout(() => { this.copiedIndex = null; }, 2000);
                 },
 
                 speakText(text) {
                     if (!('speechSynthesis' in window)) return;
                     window.speechSynthesis.cancel();
-                    const cleanText = text.replace(/[*#_`]/g, '');
+                    const cleanText = text
+                        .replace(/(?:\*\*|`?)\s*\[TRIAGE:\s*(MILD|MODERATE|EMERGENCY)\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[SAFETY_GUARDRAIL:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[JAN_AUSHADHI:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[LAB_INTERPRETER:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[DRUG_INTERACTION:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[RED_FLAG_MONITOR:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[OPD_QUESTIONS:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/(?:\*\*|`?)\s*\[QUICK_OPTIONS:\s*.*?\]\s*(?:\*\*|`?)/gi, '')
+                        .replace(/[*#_`]/g, '')
+                        .trim();
                     const utterance = new SpeechSynthesisUtterance(cleanText);
                     utterance.rate = 1.0;
                     window.speechSynthesis.speak(utterance);
@@ -1156,6 +1965,29 @@
                     } catch (err) {
                         alert('Could not parse report');
                     }
+                },
+
+                openLabModal() {
+                    this.helperDrawerTab = 'lab';
+                    this.labModalOpen = true;
+                },
+
+                openInteractionModal() {
+                    this.helperDrawerTab = 'interaction';
+                    this.labModalOpen = true;
+                },
+
+                closeLabModal() {
+                    this.labModalOpen = false;
+                },
+
+                fillLabTemplate(testTitle, sampleText) {
+                    this.userInput = sampleText;
+                    this.labModalOpen = false;
+                    this.$nextTick(() => {
+                        const inputEl = document.querySelector('input[x-model="userInput"]');
+                        if (inputEl) inputEl.focus();
+                    });
                 },
 
                 async downloadPrescription(adviceText) {
@@ -1183,6 +2015,52 @@
                     } catch (e) {
                         alert('Could not download Rx PDF');
                     }
+                },
+
+                getChiefComplaint() {
+                    const firstUserMsg = this.messages.find(m => m.role === 'user');
+                    if (firstUserMsg && firstUserMsg.content) {
+                        return firstUserMsg.content.slice(0, 200);
+                    }
+                    return this.patient.conditions || 'General Tele-Consultation';
+                },
+
+                async downloadClinicSummary(adviceText) {
+                    try {
+                        const chief = this.getChiefComplaint();
+                        const triage = this.getTriageLevel(adviceText) || 'MILD';
+                        const res = await fetch('/api/generate-clinic-summary', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                patient_name: this.patient.name,
+                                age: parseInt(this.patient.age) || 25,
+                                gender: this.patient.gender,
+                                weight: parseFloat(this.patient.weight) || 60.0,
+                                conditions: this.patient.conditions || 'None',
+                                allergies: this.patient.allergies || 'None',
+                                doctor_name: this.activeDoctorName,
+                                chief_complaint: chief,
+                                conversation_summary: adviceText,
+                                triage_level: triage
+                            })
+                        });
+                        const blob = await res.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Clinic_Summary_${(this.patient.name || 'Patient').replace(/\s+/g, '_')}.pdf`;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    } catch (e) {
+                        alert('Could not download Clinic Summary PDF');
+                    }
+                },
+
+                downloadLatestClinicSummary() {
+                    const lastAssistant = [...this.messages].reverse().find(m => m.role === 'assistant');
+                    const text = lastAssistant ? lastAssistant.content : (this.patient.conditions || 'Routine consultation');
+                    this.downloadClinicSummary(text);
                 },
 
                 setupVoiceInput() {
