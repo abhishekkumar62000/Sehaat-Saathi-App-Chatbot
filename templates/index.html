@@ -4,6 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>Sehaat Saathi App - Your AI Doctor & Smart Health Assistant</title>
+    
+    <!-- PWA Web App Manifest & Mobile App Icons (Chrome Install & Add to Home Screen) -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/media/SehaatSaathi.png">
+    <link rel="apple-touch-icon" href="/media/SehaatSaathi.png">
+    <meta name="theme-color" content="#0a1128">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sehaat Saathi">
+    <meta name="application-name" content="Sehaat Saathi App">
+
+    <!-- Register PWA Service Worker for Mobile Chrome & Android Installation -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('✅ Sehaat Saathi PWA ServiceWorker Registered:', reg.scope))
+                    .catch(err => console.log('ServiceWorker registration skipped:', err));
+            });
+        }
+    </script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -396,7 +419,7 @@
 
             <!-- 2. Doctor Photo Card (Image 2 Clean Style) -->
             <div class="rounded-2xl overflow-hidden border border-white/10 bg-[#16203a]/60 shadow-lg">
-                <img src="/media/doctor.png" alt="AI Doctor" class="w-full h-auto block rounded-2xl">
+                <img src="/media/Doctor.png" onerror="if (this.src.indexOf('Doctor.png') !== -1) { this.src = '/media/doctor.png'; }" alt="AI Doctor" class="w-full h-auto block rounded-2xl">
             </div>
 
             <!-- 3. Configuration Section (Image Ke Niche & Choose Service Mode Ke Upar) -->
@@ -536,6 +559,20 @@
                 </div>
             </div>
 
+            <!-- 📲 Install Sehaat Saathi Mobile App (PWA Card) -->
+            <div class="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-950/80 via-[#0a2620]/90 to-cyan-950/80 border border-emerald-400/40 text-center space-y-2 shadow-lg">
+                <div class="flex items-center justify-center gap-1.5">
+                    <span class="text-base">📲</span>
+                    <span class="text-xs font-black text-emerald-300 uppercase tracking-wider">Install Mobile App</span>
+                </div>
+                <p class="text-[10px] text-slate-300 leading-tight">Install Sehaat Saathi with official App Logo directly on your phone home screen:</p>
+                <button @click="installPwaApp()"
+                        class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:brightness-110 text-slate-950 font-black text-xs shadow-md transition flex items-center justify-center gap-1.5 active:scale-95">
+                    <span>⚡</span>
+                    <span>Install App on Phone</span>
+                </button>
+            </div>
+
             <!-- 9. Health Tip -->
             <div class="p-2.5 rounded-xl bg-blue-950/60 border border-blue-500/30 text-[11px] text-blue-200">
                 💡 <b>Health Tip:</b> Drink at least 3 liters of water daily for better skin and digestion.
@@ -583,6 +620,13 @@
                             title="Download 1-Page Clinical Brief / Clinic Pass for your Doctor">
                         <span>🏥</span>
                         <span class="font-bold">Clinic Pass</span>
+                    </button>
+                    <!-- 📲 PWA Chrome 1-Click Install Button -->
+                    <button @click="installPwaApp()" 
+                            class="px-2.5 py-1 rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:brightness-110 text-white font-extrabold text-[10px] sm:text-xs flex items-center gap-1 shadow-md shadow-emerald-950/40 active:scale-95 transition"
+                            title="Install Sehaat Saathi App on your phone/desktop">
+                        <span>📲</span>
+                        <span class="font-extrabold">Install App</span>
                     </button>
                     <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-semibold text-[10px]">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -1495,6 +1539,10 @@
                 cprInterval: null,
                 audioCtx: null,
 
+                // PWA Chrome Mobile Install State
+                installPrompt: null,
+                showInstallBtn: false,
+
                 // Suggested Questions per Specialty
                 suggestionMap: {
                     "General Physician (General Medicine)": [
@@ -1575,6 +1623,39 @@
 
                     this.fetchHospitals();
                     this.setupVoiceInput();
+
+                    // Listen for Chrome's native beforeinstallprompt event (Mobile PWA & Desktop)
+                    window.addEventListener('beforeinstallprompt', (e) => {
+                        e.preventDefault();
+                        this.installPrompt = e;
+                        this.showInstallBtn = true;
+                        console.log('📲 PWA Install Prompt ready');
+                    });
+
+                    window.addEventListener('appinstalled', () => {
+                        this.showInstallBtn = false;
+                        this.installPrompt = null;
+                        console.log('🎉 Sehaat Saathi PWA successfully installed!');
+                    });
+                },
+
+                async installPwaApp() {
+                    if (this.installPrompt) {
+                        this.installPrompt.prompt();
+                        const choice = await this.installPrompt.userChoice;
+                        if (choice && choice.outcome === 'accepted') {
+                            this.showInstallBtn = false;
+                        }
+                        this.installPrompt = null;
+                    } else {
+                        // Native guidance for Chrome Android & Desktop
+                        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                        if (isMobile) {
+                            alert("📲 Sehaat Saathi Mobile App Install Guide:\n\n1. Chrome browser me upar right side 3 dots (⋮) par tap karein.\n2. Menu me 'Install app' ya 'Add to Home screen' par click karein.\n3. 'Install' confirm karein — App aapke mobile home screen par Sehaat Saathi Logo ke sath create ho jayega!");
+                        } else {
+                            alert("📲 Sehaat Saathi Desktop App Install Guide:\n\n1. Chrome ke URL search bar me Right side Install icon (🖥️) par click karein.\nYa 3 dots (⋮) -> 'Save and Share' -> 'Install Sehaat Saathi App' select karein.\n2. Desktop application start ho jayegi!");
+                        }
+                    }
                 },
 
                 submitRegistration() {

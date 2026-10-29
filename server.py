@@ -849,23 +849,75 @@ async def run_tool_ai(req: ToolAIRequest):
 
 @app.get("/media/{filename}")
 async def get_media_file(filename: str):
-    file_path = Path(__file__).parent / filename
+    base_dir = Path(__file__).parent
+    file_path = base_dir / filename
     if file_path.exists() and file_path.is_file():
         return FileResponse(file_path)
+    
+    # Case-insensitive fallback for Linux production environments (e.g. Doctor.png vs doctor.png)
+    target_lower = filename.lower()
+    for child in base_dir.iterdir():
+        if child.is_file() and child.name.lower() == target_lower:
+            return FileResponse(child)
+            
+    # Also check static folder if exists
+    static_file = base_dir / "static" / filename
+    if static_file.exists() and static_file.is_file():
+        return FileResponse(static_file)
+        
     raise HTTPException(status_code=404, detail="File not found")
 
 @app.get("/sw.js")
 async def service_worker():
-    """Minimal service worker to satisfy PWA/browser requests."""
-    sw_content = """
-// SehaatSaathi - Minimal Service Worker
-const CACHE = 'sehaat-v1';
-self.addEventListener('install', e => self.skipWaiting());
-self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-self.addEventListener('fetch', e => {
+    """PWA Service Worker for Chrome Mobile Installation & Offline Shell."""
+    sw_content = """// Sehaat Saathi - PWA Service Worker (Chrome Mobile Install & Offline Shell)
+const CACHE_NAME = 'sehaat-saathi-pwa-v2';
+const STATIC_ASSETS = [
+    '/',
+    '/manifest.json',
+    '/media/SehaatSaathi.png',
+    '/media/Doctor.png',
+    '/media/pwa_icon_192.png',
+    '/media/pwa_icon_512.png',
+    '/media/pwa_icon_maskable.png',
+    '/media/Founder.jpeg'
+];
+
+self.addEventListener('install', (e) => {
+    e.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(STATIC_ASSETS).catch((err) => console.log('Asset precache warning:', err));
+        }).then(() => self.skipWaiting())
+    );
+});
+
+self.addEventListener('activate', (e) => {
+    e.waitUntil(
+        caches.keys().then((keys) => {
+            return Promise.all(
+                keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+            );
+        }).then(() => self.clients.claim())
+    );
+});
+
+self.addEventListener('fetch', (e) => {
     if (e.request.method !== 'GET') return;
+    
+    // API endpoints should always go to network directly
+    if (e.request.url.includes('/api/')) {
+        return;
+    }
+
     e.respondWith(
-        fetch(e.request).catch(() => caches.match(e.request))
+        fetch(e.request).catch(() => {
+            return caches.match(e.request).then((res) => {
+                if (res) return res;
+                if (e.request.mode === 'navigate') {
+                    return caches.match('/');
+                }
+            });
+        })
     );
 });
 """
@@ -873,19 +925,46 @@ self.addEventListener('fetch', e => {
 
 @app.get("/manifest.json")
 async def pwa_manifest():
-    """PWA Web App Manifest for mobile Add-to-Home-Screen."""
+    """PWA Web App Manifest for mobile Chrome 3-dot 'Install app' and Add-to-Home-Screen."""
     manifest = {
+        "id": "/",
         "name": "Sehaat Saathi App - AI Doctor",
-        "short_name": "SehaatSaathiApp",
-        "description": "India's 1st AI Powered Virtual HealthCare Platform",
+        "short_name": "Sehaat Saathi",
+        "description": "India's 1st AI Powered Virtual HealthCare Platform & 24/7 Medical Companion",
         "start_url": "/",
+        "scope": "/",
         "display": "standalone",
-        "background_color": "#0f0c29",
+        "orientation": "portrait",
+        "background_color": "#0a1128",
         "theme_color": "#00d2ff",
+        "lang": "en-IN",
         "icons": [
-            {"src": "/media/SehaatSaathi.png", "sizes": "192x192", "type": "image/png"},
-            {"src": "/media/SehaatSaathi.png", "sizes": "512x512", "type": "image/png"}
-        ]
+            {
+                "src": "/media/pwa_icon_192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "any"
+            },
+            {
+                "src": "/media/pwa_icon_512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any"
+            },
+            {
+                "src": "/media/pwa_icon_maskable.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "maskable"
+            },
+            {
+                "src": "/media/SehaatSaathi.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any"
+            }
+        ],
+        "categories": ["medical", "health", "lifestyle"]
     }
     return JSONResponse(content=manifest)
 
