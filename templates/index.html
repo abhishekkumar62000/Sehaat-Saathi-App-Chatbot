@@ -197,6 +197,17 @@
             background: rgba(0, 210, 255, 0.3);
             border-radius: 10px;
         }
+        /* Mobile horizontal scroll without scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .pb-safe {
+            padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);
+        }
     </style>
 </head>
 <body class="relative min-h-screen text-slate-100 selection:bg-brand-cyan selection:text-black overflow-x-hidden"
@@ -215,8 +226,8 @@
         </svg>
     </div>
 
-    <!-- 🫧 Floating Medical Particles -->
-    <div class="floating-particles">
+    <!-- 🫧 Floating Medical Particles (Desktop only so it doesn't clutter mobile) -->
+    <div class="floating-particles hidden md:block opacity-40">
         <div class="particle" style="left: 10%; animation-delay: 0s;">✚</div>
         <div class="particle" style="left: 25%; animation-delay: 3s;">❤️</div>
         <div class="particle" style="left: 40%; animation-delay: 6s;">💊</div>
@@ -479,32 +490,44 @@
         </aside>
 
         <!-- ========================================== -->
-        <!-- MAIN CONTENT AREA (MATCHING IMAGE 2)       -->
+        <!-- MAIN CONTENT AREA (RESPONSIVE MOBILE APP)  -->
         <!-- ========================================== -->
-        <main class="flex-1 p-3 sm:p-5 md:p-8 overflow-y-auto max-h-screen space-y-4 md:space-y-6 w-full min-w-0">
+        <main class="flex-1 p-2.5 sm:p-5 md:p-8 overflow-y-auto max-h-screen space-y-3.5 md:space-y-6 w-full min-w-0 pb-24 lg:pb-8">
             
-            <!-- Sticky Top Navigation / Toggle Menu Bar -->
-            <div class="flex items-center justify-between gap-2 p-2 sm:p-2.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md sticky top-0 z-30 shadow-lg">
-                <button @click="sidebarOpen = !sidebarOpen"
-                        class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl btn-pink-gradient font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
-                    <span class="text-sm font-black" x-text="sidebarOpen ? '✕' : '☰'"></span>
-                    <span x-text="sidebarOpen ? 'Hide Menu' : 'Doctor Menu 👨‍⚕️'"></span>
-                </button>
+            <!-- Sticky Top Navigation / Mobile App Bar -->
+            <header class="flex items-center justify-between gap-2 p-2 sm:p-2.5 rounded-2xl bg-[#0a122c]/90 border border-white/10 backdrop-blur-xl sticky top-0 z-30 shadow-xl">
+                <div class="flex items-center gap-2">
+                    <button @click="sidebarOpen = !sidebarOpen"
+                            class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl btn-pink-gradient font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition">
+                        <span class="text-sm font-black" x-text="sidebarOpen ? '✕' : '☰'"></span>
+                        <span class="hidden sm:inline" x-text="sidebarOpen ? 'Hide Menu' : 'Doctor Menu 👨‍⚕️'"></span>
+                        <span class="sm:hidden font-extrabold" x-text="sidebarOpen ? 'Close' : 'Menu'"></span>
+                    </button>
 
+                    <!-- Mobile Brand Logo Text -->
+                    <div class="sm:hidden flex items-center gap-1 text-xs font-bold">
+                        <span class="text-brand-orange">Sehaat</span><span class="text-brand-green">Saathi</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[9px] bg-brand-cyan/20 text-brand-cyan font-bold border border-brand-cyan/40">App</span>
+                    </div>
+                </div>
+
+                <!-- Active Doctor Badge -->
                 <div class="flex items-center gap-2 text-xs truncate">
-                    <span class="px-2.5 py-1 rounded-full bg-cyan-950/80 border border-brand-cyan/40 text-brand-cyan font-bold truncate flex items-center gap-1 text-[11px] sm:text-xs">
-                        <span>🩺</span>
-                        <span x-text="activeDoctorName"></span>
-                    </span>
-                    <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-semibold text-[11px]">
+                    <button @click="sidebarOpen = true"
+                            class="px-2.5 py-1 rounded-full bg-cyan-950/80 border border-brand-cyan/40 text-brand-cyan font-bold truncate flex items-center gap-1.5 text-[11px] sm:text-xs hover:border-brand-cyan transition active:scale-95">
+                        <span class="text-sm">🩺</span>
+                        <span class="truncate max-w-[120px] sm:max-w-none" x-text="activeDoctorName"></span>
+                        <span class="text-[9px] text-cyan-400 opacity-70">▼</span>
+                    </button>
+                    <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-semibold text-[10px]">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         Live
                     </span>
                 </div>
-            </div>
+            </header>
             
-            <!-- Top App Header (Image 2) -->
-            <div class="text-center space-y-1">
+            <!-- Desktop Top App Header (Image 2 - Full) -->
+            <div class="hidden md:block text-center space-y-1">
                 <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight font-heading">
                     <span class="text-brand-orange">Sehaat</span> <span class="text-brand-green">Saathi</span> <span class="text-cyan-400">App</span> 🧑‍⚕️
                 </h1>
@@ -513,8 +536,8 @@
                 </p>
             </div>
 
-            <!-- Platform Info Box (Image 2) -->
-            <div class="st-card-dark p-4 rounded-2xl text-center space-y-1 border border-white/10 shadow-lg">
+            <!-- Desktop Platform Info Box -->
+            <div class="hidden md:block st-card-dark p-4 rounded-2xl text-center space-y-1 border border-white/10 shadow-lg">
                 <p class="text-xs md:text-sm font-semibold text-slate-200">
                     🚀 <span class="text-brand-orange font-bold">Sehaat</span> <span class="text-brand-green font-bold">Saathi</span> <span class="text-cyan-400 font-bold">App</span> is <span class="text-pink-400 font-bold">India's 1st AI Powered Virtual HealthCare Platform</span>
                 </p>
@@ -523,13 +546,32 @@
                 </p>
             </div>
 
+            <!-- Mobile Compact Hero Badge (Saves 250px vertical screen space on phones) -->
+            <div class="md:hidden p-2.5 rounded-2xl bg-gradient-to-r from-blue-950/70 via-[#141d3b]/80 to-purple-950/70 border border-white/10 shadow-md flex items-center justify-between gap-2.5">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-pink-500/20 border border-pink-500/30 flex items-center justify-center text-base shrink-0">
+                        🇮🇳
+                    </div>
+                    <div class="space-y-0.5">
+                        <div class="text-[11px] font-bold text-white flex items-center gap-1.5">
+                            <span>India's 1st AI Health Platform</span>
+                            <span class="px-1.5 py-0.2 rounded-full text-[8px] bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40">Active</span>
+                        </div>
+                        <p class="text-[10px] text-slate-300">Instant AI Diagnosis, Rx & Smart Wellness</p>
+                    </div>
+                </div>
+                <button @click="sidebarOpen = true" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] text-brand-cyan font-bold shrink-0">
+                    Change 👨‍⚕️
+                </button>
+            </div>
+
             <!-- ============================================================== -->
             <!-- SUB-VIEW 1: AI DOCTOR CONSULTATION (IMAGE 2)                  -->
             <!-- ============================================================== -->
             <div x-show="serviceMode === 'consult'" class="space-y-4">
                 
-                <!-- Doctor Status Bar (Image 2) -->
-                <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold">
+                <!-- Doctor Status Bar (Desktop Only - Mobile already has this in sticky top bar) -->
+                <div class="hidden sm:flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold">
                     <span class="text-brand-cyan flex items-center gap-1.5">
                         <span>🩺</span>
                         <span x-text="activeDoctorName"></span>
@@ -601,66 +643,81 @@
                     </div>
                 </div>
 
-                <!-- 💡 Suggested Questions for Doctor (Image 2) -->
-                <div class="space-y-2 pt-2">
-                    <h3 class="text-xs md:text-sm font-bold text-slate-100 flex items-center gap-1.5">
-                        <span>💡</span>
-                        <span>Suggested Questions for <span class="text-brand-cyan" x-text="activeDoctorName"></span></span>
-                    </h3>
+                <!-- 💡 Suggested Questions for Doctor (Native Mobile Horizontal Swipe + Desktop Grid) -->
+                <div class="space-y-2 pt-1">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-200 px-1">
+                        <span class="flex items-center gap-1.5">
+                            <span>💡</span>
+                            <span>Suggested for <span class="text-brand-cyan" x-text="activeDoctorName"></span></span>
+                        </span>
+                        <span class="text-[10px] text-pink-400 font-normal md:hidden flex items-center gap-1 animate-pulse">
+                            Swipe 👉
+                        </span>
+                    </div>
 
-                    <!-- 4 Horizontal Pink Pill Buttons (Image 2) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                    <!-- Mobile: Horizontal Swipeable Chips | Desktop: 4-Column Grid -->
+                    <div class="flex md:grid md:grid-cols-4 gap-2 overflow-x-auto no-scrollbar py-1 snap-x scroll-smooth">
                         <template x-for="q in currentSuggestedQuestions" :key="q">
-                            <button @click="sendDirectQuestion(q)" class="pill-suggestion text-center truncate" :title="q" x-text="q"></button>
+                            <button @click="sendDirectQuestion(q)"
+                                    class="pill-suggestion shrink-0 snap-start text-xs text-left md:text-center px-3.5 py-2 md:py-2.5 rounded-full md:rounded-2xl flex items-center gap-1.5 shadow-md hover:scale-[1.02] active:scale-95 transition"
+                                    :title="q">
+                                <span class="text-xs">💬</span>
+                                <span class="whitespace-nowrap md:whitespace-normal" x-text="q"></span>
+                            </button>
                         </template>
                     </div>
 
-                    <!-- Pagination Controls ⬅️ ➡️ (Image 2) -->
-                    <div class="flex items-center justify-between pt-1">
-                        <button @click="prevSuggestionPage()" class="w-8 h-8 rounded-xl bg-pink-600/80 hover:bg-pink-600 text-white font-bold flex items-center justify-center transition">
-                            ⬅️
+                    <!-- Compact Pagination Controls ⬅️ ➡️ -->
+                    <div class="flex items-center justify-between px-1 text-[11px] text-slate-400">
+                        <button @click="prevSuggestionPage()" class="px-2.5 py-1 rounded-lg bg-pink-600/80 hover:bg-pink-600 text-white font-bold flex items-center gap-1 text-[11px] transition active:scale-95">
+                            <span>◀</span>
+                            <span class="hidden sm:inline">Prev</span>
                         </button>
-                        <span class="text-[11px] text-slate-400">Page <span x-text="suggestionPage + 1"></span> of <span x-text="totalSuggestionPages"></span></span>
-                        <button @click="nextSuggestionPage()" class="w-8 h-8 rounded-xl bg-pink-600/80 hover:bg-pink-600 text-white font-bold flex items-center justify-center transition">
-                            ➡️
+                        <span class="text-[10px] sm:text-[11px]">Page <b class="text-white" x-text="suggestionPage + 1"></b> of <span x-text="totalSuggestionPages"></span></span>
+                        <button @click="nextSuggestionPage()" class="px-2.5 py-1 rounded-lg bg-pink-600/80 hover:bg-pink-600 text-white font-bold flex items-center gap-1 text-[11px] transition active:scale-95">
+                            <span class="hidden sm:inline">Next</span>
+                            <span>▶</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Attached Report Indicator -->
-                <div x-show="attachedReportName" class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-cyan-950/80 border border-brand-cyan text-xs text-brand-cyan">
-                    <span>📎 Report Attached: <b x-text="attachedReportName"></b></span>
-                    <button @click="attachedReportName = ''; attachedReportText = '';" class="text-red-400 hover:text-red-300">✕</button>
+                <div x-show="attachedReportName" class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-cyan-950/90 border border-brand-cyan text-xs text-brand-cyan shadow-md">
+                    <span class="truncate max-w-[80%] flex items-center gap-1.5">
+                        <span>📎</span>
+                        <span>Report Attached: <b class="text-white" x-text="attachedReportName"></b></span>
+                    </span>
+                    <button @click="attachedReportName = ''; attachedReportText = '';" class="w-5 h-5 rounded-full bg-red-500/20 text-red-400 hover:text-white hover:bg-red-500 flex items-center justify-center font-bold">✕</button>
                 </div>
 
-                <!-- Bottom Chat Input Area (Image 2) -->
-                <div class="pt-2 border-t border-white/10">
-                    <div class="flex items-center gap-2">
+                <!-- Sticky Bottom Chat Input Area (Native Mobile Dock) -->
+                <div class="sticky bottom-0 z-20 backdrop-blur-2xl bg-[#090f24]/95 border-t border-white/10 p-2 sm:p-3 -mx-2.5 sm:-mx-5 md:-mx-8 shadow-2xl">
+                    <div class="flex items-center gap-1.5 sm:gap-2">
                         <!-- File Upload -->
-                        <label class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 cursor-pointer transition" title="Attach Medical Report / Image">
-                            📎
+                        <label class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-slate-300 cursor-pointer active:scale-90 transition shrink-0 flex items-center justify-center w-10 h-10 border border-white/10" title="Attach Medical Report / Image">
+                            <span class="text-base">📎</span>
                             <input type="file" @change="uploadReportFile($event)" class="hidden" accept=".pdf,.png,.jpg,.jpeg">
                         </label>
 
                         <!-- Speak Mic Button -->
                         <button @click="toggleMicSpeech()"
                                 :class="isListening ? 'bg-red-600 text-white animate-pulse ring-2 ring-red-400' : 'bg-white/10 hover:bg-white/20 text-slate-300'"
-                                class="p-2.5 rounded-xl transition" title="Voice Dictation">
-                            🎤
+                                class="p-2.5 rounded-2xl active:scale-90 transition shrink-0 flex items-center justify-center w-10 h-10 border border-white/10" title="Voice Dictation">
+                            <span class="text-base">🎤</span>
                         </button>
 
                         <!-- Text Input Box -->
                         <input type="text"
                                x-model="userInput"
                                @keydown.enter="sendTextMessage()"
-                               :placeholder="'Ask your ' + activeDoctorName + ' ...'"
-                               class="flex-1 px-4 py-2.5 st-input text-xs">
+                               :placeholder="'Ask ' + activeDoctorName + ' anything...'"
+                               class="flex-1 px-4 py-2.5 st-input text-xs sm:text-sm rounded-2xl">
 
-                        <!-- Send Button (Circular Arrow Button in Image 2) -->
+                        <!-- Send Button (Vibrant Pink Gradient Pop) -->
                         <button @click="sendTextMessage()"
                                 :disabled="isLoading || (!userInput.trim() && !attachedReportText)"
-                                class="w-10 h-10 rounded-xl bg-white/10 hover:bg-brand-cyan hover:text-black text-white font-bold flex items-center justify-center transition disabled:opacity-40">
-                            ↑
+                                class="w-10 h-10 rounded-2xl btn-pink-gradient font-black flex items-center justify-center transition active:scale-90 shadow-lg disabled:opacity-40 shrink-0">
+                            <span class="text-base">➤</span>
                         </button>
                     </div>
                 </div>
@@ -785,6 +842,34 @@
             </div>
 
         </main>
+
+        <!-- 📱 Native Mobile Bottom App Navigation (Phone View) -->
+        <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#070c20]/95 backdrop-blur-2xl border-t border-white/10 px-3 py-1.5 flex items-center justify-around text-[10px] pb-safe shadow-2xl">
+            <button @click="serviceMode = 'consult'; window.scrollTo({top: 0, behavior: 'smooth'});"
+                    :class="serviceMode === 'consult' ? 'text-brand-cyan font-bold scale-105' : 'text-slate-400 hover:text-slate-200'"
+                    class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition active:scale-95">
+                <span class="text-base">💬</span>
+                <span>Consult</span>
+                <span x-show="serviceMode === 'consult'" class="w-1.5 h-1.5 rounded-full bg-brand-cyan shadow-sm shadow-cyan-400"></span>
+            </button>
+            <button @click="serviceMode = 'wellness'"
+                    :class="serviceMode === 'wellness' ? 'text-brand-cyan font-bold scale-105' : 'text-slate-400 hover:text-slate-200'"
+                    class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition active:scale-95">
+                <span class="text-base">🧘</span>
+                <span>Wellness</span>
+                <span x-show="serviceMode === 'wellness'" class="w-1.5 h-1.5 rounded-full bg-brand-cyan shadow-sm shadow-cyan-400"></span>
+            </button>
+            <button @click="sidebarOpen = true"
+                    class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl text-slate-400 hover:text-slate-200 transition active:scale-95">
+                <span class="text-base">👨‍⚕️</span>
+                <span>Doctors</span>
+            </button>
+            <button @click="sidebarOpen = true; showPatientExpander = true"
+                    class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl text-slate-400 hover:text-slate-200 transition active:scale-95">
+                <span class="text-base">👤</span>
+                <span>Profile</span>
+            </button>
+        </nav>
     </div>
 
     <!-- Application Controller Logic -->
